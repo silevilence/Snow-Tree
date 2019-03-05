@@ -1,0 +1,36 @@
+//
+// Created by lenovo on 2017/9/13.
+//
+
+#ifndef LEARNOPENGL_TEXTURE2D_H
+#define LEARNOPENGL_TEXTURE2D_H
+
+
+#include <glad/glad.h>
+
+class texture2d {
+public:
+	// Holds the ID of the texture object, used for all texture operations to reference to this particlar texture
+	GLuint id;
+	// Texture image dimensions
+	GLuint width, height; // Width and height of loaded image in pixels
+	// Texture Format
+	GLuint internal_format; // Format of texture object
+	GLuint image_format; // Format of loaded image
+	// Texture configuration
+	GLuint wrap_s; // Wrapping mode on S axis
+	GLuint wrap_t; // Wrapping mode on T axis
+	GLuint filter_min; // Filtering mode if texture pixels < screen pixels
+	GLuint filter_max; // Filtering mode if texture pixels > screen pixels
+	// Constructor (sets default texture modes)
+	texture2d();
+
+	// Generates texture from image data
+	void generate(GLuint width, GLuint height, unsigned char* data);
+
+	// Binds the texture as the current active GL_TEXTURE_2D texture object
+	void bind() const;
+};
+
+
+#endif //LEARNOPENGL_TEXTURE2D_H
