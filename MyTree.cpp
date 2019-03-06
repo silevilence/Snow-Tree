@@ -33,6 +33,7 @@ Mesh MyTree::_Create_Cylinders(const Point *const points, int pointNum, int prec
         delete single_vertices;
     }
     mesh.vertices = vertices;
+    mesh.vertices_num = precision * pointNum;
 
     auto indices = new int[precision * 6 * (pointNum - 1)];
     for(int i = 0; i < pointNum - 1; i++) {
@@ -41,6 +42,7 @@ Mesh MyTree::_Create_Cylinders(const Point *const points, int pointNum, int prec
         delete triangles;
     }
     mesh.indices = indices;
+    mesh.indices_num = precision * 6 * (pointNum - 1);
 
     return mesh;
 }

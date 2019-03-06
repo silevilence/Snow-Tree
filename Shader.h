@@ -12,18 +12,18 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-class shader {
+class Shader {
 public:
 	// State
 	GLuint id;
 	// Constructor
-	shader()
+	Shader()
 		: id(0) {
 	}
 
 	// NOLINT
 	// Sets the current shader as active
-	shader& use();
+	Shader& use();
 	// Compiles the shader from given source code
 	void compile(const GLchar* vertex_source, const GLchar* fragment_source, const GLchar* geometry_source = nullptr);
 	// Note: geometry source code is optional

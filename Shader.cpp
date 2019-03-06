@@ -6,12 +6,12 @@
 
 #include <iostream>
 
-shader& shader::use() {
+Shader& Shader::use() {
 	glUseProgram(this->id);
 	return *this;
 }
 
-void shader::compile(const GLchar* vertexSource, const GLchar* fragmentSource, const GLchar* geometrySource) {
+void Shader::compile(const GLchar* vertexSource, const GLchar* fragmentSource, const GLchar* geometrySource) {
 	GLuint sVertex, sFragment, gShader = 0;
 	// Vertex Shader
 	sVertex = glCreateShader(GL_VERTEX_SHADER);
@@ -45,62 +45,62 @@ void shader::compile(const GLchar* vertexSource, const GLchar* fragmentSource, c
 		glDeleteShader(gShader);
 }
 
-void shader::set_float(const GLchar* name, GLfloat value, GLboolean useShader) {
+void Shader::set_float(const GLchar* name, GLfloat value, GLboolean useShader) {
 	if (useShader)
 		this->use();
 	glUniform1f(glGetUniformLocation(this->id, name), value);
 }
 
-void shader::set_integer(const GLchar* name, GLint value, GLboolean useShader) {
+void Shader::set_integer(const GLchar* name, GLint value, GLboolean useShader) {
 	if (useShader)
 		this->use();
 	glUniform1i(glGetUniformLocation(this->id, name), value);
 }
 
-void shader::set_vector2f(const GLchar* name, GLfloat x, GLfloat y, GLboolean useShader) {
+void Shader::set_vector2f(const GLchar* name, GLfloat x, GLfloat y, GLboolean useShader) {
 	if (useShader)
 		this->use();
 	glUniform2f(glGetUniformLocation(this->id, name), x, y);
 }
 
-void shader::set_vector2f(const GLchar* name, const glm::vec2& value, GLboolean useShader) {
+void Shader::set_vector2f(const GLchar* name, const glm::vec2& value, GLboolean useShader) {
 	if (useShader)
 		this->use();
 	glUniform2f(glGetUniformLocation(this->id, name), value.x, value.y);
 }
 
-void shader::set_vector3f(const GLchar* name, GLfloat x, GLfloat y, GLfloat z, GLboolean useShader) {
+void Shader::set_vector3f(const GLchar* name, GLfloat x, GLfloat y, GLfloat z, GLboolean useShader) {
 	if (useShader)
 		this->use();
 	glUniform3f(glGetUniformLocation(this->id, name), x, y, z);
 }
 
-void shader::set_vector3f(const GLchar* name, const glm::vec3& value, GLboolean useShader) {
+void Shader::set_vector3f(const GLchar* name, const glm::vec3& value, GLboolean useShader) {
 	if (useShader)
 		this->use();
 	glUniform3f(glGetUniformLocation(this->id, name), value.x, value.y, value.z);
 }
 
-void shader::set_vector4f(const GLchar* name, GLfloat x, GLfloat y, GLfloat z, GLfloat w, GLboolean useShader) {
+void Shader::set_vector4f(const GLchar* name, GLfloat x, GLfloat y, GLfloat z, GLfloat w, GLboolean useShader) {
 	if (useShader)
 		this->use();
 	glUniform4f(glGetUniformLocation(this->id, name), x, y, z, w);
 }
 
-void shader::set_vector4f(const GLchar* name, const glm::vec4& value, GLboolean useShader) {
+void Shader::set_vector4f(const GLchar* name, const glm::vec4& value, GLboolean useShader) {
 	if (useShader)
 		this->use();
 	glUniform4f(glGetUniformLocation(this->id, name), value.x, value.y, value.z, value.w);
 }
 
-void shader::set_matrix4(const GLchar* name, const glm::mat4& matrix, GLboolean useShader) {
+void Shader::set_matrix4(const GLchar* name, const glm::mat4& matrix, GLboolean useShader) {
 	if (useShader)
 		this->use();
 	glUniformMatrix4fv(glGetUniformLocation(this->id, name), 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
 
-void shader::check_compile_errors(GLuint object, const std::string& type) {
+void Shader::check_compile_errors(GLuint object, const std::string& type) {
 	GLint success;
 	GLchar infoLog[1024];
 	if (type != "PROGRAM") {

@@ -17,6 +17,14 @@
 
 class MyTree {
 public:
+    /**!
+     * 根据顺序排列的点生成圆柱体网格
+     * @param points 点集
+     * @param pointNum 点的数量
+     * @param precision 一个圆周的点的数量
+     * @return 生成的圆柱网格
+     */
+    static Mesh _Create_Cylinders(const Point *points, int pointNum, int precision);
 
 private:
     /**!
@@ -26,15 +34,6 @@ private:
      * @return 生成的点的坐标，从0度开始逆时针排列
      */
     static Vertex *_Circle_Vertices(const Point &point, const int &precision);
-
-    /**!
-     * 根据顺序排列的点生成圆柱体网格
-     * @param points 点集
-     * @param pointNum 点的数量
-     * @param precision 一个圆周的点的数量
-     * @return 生成的圆柱网格
-     */
-    static Mesh _Create_Cylinders(const Point *points, int pointNum, int precision);
 
     /**!
      * 生成单段圆柱的三角形
