@@ -10,7 +10,7 @@ INCLUDE_DIRECTORIES("E:\\include\\copy")
 
 link_directories("E:\\include\\glfw-3.2.1.bin.WIN32\\lib-mingw")
 
-set(SOURCE_FILES main.cpp glad.c ResourceManager.cpp Shader.cpp stb_image.cpp Texture2D.cpp)
+set(SOURCE_FILES main.cpp glad.c ResourceManager.cpp Shader.cpp stb_image.cpp Texture2D.cpp Point.cpp MyTree.cpp)
 
 add_executable(Tree ${SOURCE_FILES})
 
