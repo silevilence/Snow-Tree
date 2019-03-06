@@ -10,7 +10,7 @@ Mesh::Mesh() {
 }
 
 void Mesh::setup_mesh() {
-    glGenVertexArrays(2, &VAO);
+    glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
 
@@ -36,6 +36,7 @@ void Mesh::setup_mesh() {
 }
 
 void Mesh::draw(Shader shader) {
+    shader.use();
 //    unsigned int diffuseNr = 1;
 //    unsigned int specularNr = 1;
 //    for(unsigned int i = 0; i < textures.size(); i++) {

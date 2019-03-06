@@ -23,7 +23,7 @@ const float ZOOM = 45.0f;
 
 
 // An abstract camera class that processes input and calculates the corresponding Eular Angles, Vectors and Matrices for use in OpenGL
-class camera {
+class Camera {
 public:
 	// Camera Attributes
 	glm::vec3 position;
@@ -40,7 +40,7 @@ public:
 	float zoom;
 
 	// Constructor with vectors
-	explicit camera(const glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
+	explicit Camera(const glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
 	                const glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), const float yaw = YAW, const float pitch = PITCH)
 		: front(glm::vec3(0.0f, 0.0f, -1.0f)), movement_speed(SPEED), mouse_sensitivity(SENSITIVTY), zoom(ZOOM) {
 		this->position = position;
@@ -51,7 +51,7 @@ public:
 	}
 
 	// Constructor with scalar values
-	camera(const float pos_x, const float pos_y, const float pos_z, const float up_x, const float up_y, const float up_z,
+	Camera(const float pos_x, const float pos_y, const float pos_z, const float up_x, const float up_y, const float up_z,
 	       const float yaw, const float pitch)
 		: front(glm::vec3(0.0f, 0.0f, -1.0f)), movement_speed(SPEED), mouse_sensitivity(SENSITIVTY), zoom(ZOOM) {
 		position = glm::vec3(pos_x, pos_y, pos_z);

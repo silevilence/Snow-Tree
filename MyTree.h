@@ -24,7 +24,7 @@ public:
      * @param precision 一个圆周的点的数量
      * @return 生成的圆柱网格
      */
-    static Mesh _Create_Cylinders(const Point *points, int pointNum, int precision);
+    static Mesh Create_Cylinders(const Point *points, int pointNum, int precision);
 
 private:
     /**!
@@ -42,7 +42,7 @@ private:
      * @param top_start 顶部圆的点的起始索引
      * @return 生成的三角形数组
      */
-    static int *_Create_Cylinder_Triangles(int precision, int bottom_start = -1, int top_start = -1);
+    static int *_Create_Cylinder_Triangles(int precision, int bottom_start, int top_start);
 };
 
 #endif //TREE_MYTREE_H

@@ -23,8 +23,8 @@ Vertex *MyTree::_Circle_Vertices(const Point &point, const int &precision) {
     return vertices;
 }
 
-Mesh MyTree::_Create_Cylinders(const Point *const points, int pointNum, int precision) {
-    auto mesh = Mesh();
+Mesh MyTree::Create_Cylinders(const Point *points, int pointNum, int precision) {
+    Mesh mesh;
 
     auto vertices = new Vertex[pointNum * precision];
     for(int i = 0; i < pointNum; i++) {
