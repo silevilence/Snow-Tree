@@ -9,6 +9,7 @@
 
 struct Vertex {
     glm::vec3 position;
+    glm::vec3 normal;
 };
 
 #endif //TREE_VERTEX_H
