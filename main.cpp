@@ -53,14 +53,17 @@ int main(int argc, char *argv[]) {
     auto delta_time = 0.0;
     auto last_frame = 0.0;
 
-    Point points[] = {Point(glm::vec3(0, 0, 0), 1, glm::vec3(1), 0),
-                      Point(glm::vec3(0, 1, 0), 1, glm::vec3(1), 0)};
-    Mesh tree = MyTree::Create_Cylinders(points, 2, 20);
+    Point points[] = {Point(glm::vec3(0, 0, 0), 1.2, glm::vec3(1), 0),
+                      Point(glm::vec3(0, 0.1, 0), 1, glm::vec3(0), 0),
+                      Point(glm::vec3(0, 0.9, 0), 1, glm::vec3(0), 0),
+                      Point(glm::vec3(0, 1, 0), 0.9, glm::vec3(1), 0),
+                      Point(glm::vec3(0, 1, 0), 0, glm::vec3(1), 0)};
+    Mesh tree = MyTree::Create_Cylinders(points, 5, 20);
     tree.setup_mesh();
 
-    glm::vec3 lightPos = glm::vec3(5, 5, 5);
+    glm::vec3 lightPos = glm::vec3(2, 2, 2);
 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+//    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     while(!glfwWindowShouldClose(window)) {
         const auto current_frame = GLfloat(glfwGetTime());
         delta_time += current_frame - last_frame;
@@ -100,7 +103,8 @@ int main(int argc, char *argv[]) {
 
         // world transformation
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0, -0.5f, 0));
+        model = glm::translate(model, glm::vec3(0, -0.2f, 0));
+        model = glm::rotate(model, glm::radians(45.f), glm::vec3(1, 0, 0));
         shader.set_matrix4("model", model);
         tree.draw(shader);
 

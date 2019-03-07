@@ -15,7 +15,8 @@ Vertex *MyTree::_Circle_Vertices(const Point &point, const int &precision) {
         auto rotMat = glm::mat4(1);
         rotMat = glm::translate(rotMat, point.position);
         rotMat = glm::rotate(rotMat, glm::radians(360.f * i / precision), glm::vec3(0, 1, 0));
-        rotMat = glm::rotate(rotMat, glm::radians(point.rotAngle), point.rotAxis);
+        if(glm::vec3(0) != point.rotAxis)
+            rotMat = glm::rotate(rotMat, glm::radians(point.rotAngle), point.rotAxis);
         glm::vec4 vertex4 = rotMat * firstPointV4;
         vertices[i].position = glm::vec3(vertex4.x, vertex4.y, vertex4.z);
         vertices[i].normal = glm::normalize(vertices[i].position - point.position);
