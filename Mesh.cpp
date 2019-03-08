@@ -62,3 +62,13 @@ void Mesh::draw(Shader shader) {
     glDrawElements(GL_TRIANGLES, indices_num, GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
 }
+
+Mesh::~Mesh() {
+    delete vertices;
+    delete indices;
+    if(is_set) {
+        glDeleteVertexArrays(1, &VAO);
+        glDeleteBuffers(1, &VBO);
+        glDeleteBuffers(1, &EBO);
+    }
+}

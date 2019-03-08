@@ -17,6 +17,7 @@ public:
     int indices_num;
 
     Mesh();
+    ~Mesh();
 
     void setup_mesh();
     void draw(Shader shader);
