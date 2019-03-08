@@ -12,9 +12,16 @@ Point::Point(const glm::vec3 &position, GLfloat radius, const glm::vec3 &rotAxis
 }
 
 Point::Point(const Point &point) {
-    this->position = glm::vec3(point.position);
+    this->position = point.position;
     this->radius = point.radius;
-    this->rotAxis = glm::vec3(point.rotAxis);
+    this->rotAxis = point.rotAxis;
+    this->rotAngle = point.rotAngle;
+}
+
+Point &Point::operator=(const Point &point) {
+    this->position = point.position;
+    this->radius = point.radius;
+    this->rotAxis = point.rotAxis;
     this->rotAngle = point.rotAngle;
 }
 

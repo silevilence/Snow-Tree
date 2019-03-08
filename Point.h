@@ -22,7 +22,7 @@ public:
 
     Point(const Point &point);
 
-    Point &operator=(const Point &) = delete;
+    Point &operator=(const Point &);
 };
 
 #endif //TREE_POINT_H

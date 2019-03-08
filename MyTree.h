@@ -26,6 +26,9 @@ public:
      */
     static Mesh Create_Cylinders(const Point *points, int pointNum, int precision);
 
+    static Point *
+    generate_circular_helix(const GLfloat &a, const GLfloat &omega, const GLfloat &H, const GLfloat &radius, int times);
+
 private:
     /**!
      * 生成指定圆心，半径，点数的点

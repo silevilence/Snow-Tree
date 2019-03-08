@@ -22,6 +22,7 @@ public:
     void draw(Shader shader);
 private:
     GLuint VAO, VBO, EBO;
+    bool is_set;
 };
 
 #endif //TREE_MESH_H

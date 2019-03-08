@@ -7,6 +7,7 @@
 Mesh::Mesh() {
     vertices = nullptr;
     indices = nullptr;
+    is_set = false;
 }
 
 void Mesh::setup_mesh() {
@@ -33,6 +34,8 @@ void Mesh::setup_mesh() {
 //    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, TexCoords));
 
     glBindVertexArray(0);
+
+    is_set = true;
 }
 
 void Mesh::draw(Shader shader) {

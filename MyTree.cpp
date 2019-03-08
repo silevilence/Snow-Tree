@@ -66,3 +66,37 @@ int *MyTree::_Create_Cylinder_Triangles(int precision, int bottom_start = -1, in
 
     return triangles;
 }
+
+Point *MyTree::generate_circular_helix(const GLfloat &a, const GLfloat &omega, const GLfloat &H, const GLfloat &radius,
+                                       int times = -1) {
+    assert(a > 0 and omega > 0 and H > 0 and radius > 0);
+    if(times < 0) {
+        times = (int) omega / 360;
+    }
+
+    auto points = new Point[times];
+    auto angle = glm::degrees(glm::atan(H, 2 * glm::pi<GLfloat>() * a));
+
+    for(int i = 0; i < times; i++) {
+        GLfloat degree = omega * i;
+        Point point;
+
+        point.radius = radius;
+
+        // position
+        auto trans_mat = glm::mat4(1);
+        trans_mat = glm::translate(trans_mat, glm::vec3(0, degree / 360 * H, 0));
+        trans_mat = glm::rotate(trans_mat, glm::radians(degree), glm::vec3(0, 1, 0));
+
+        auto pos = glm::vec4(a, 0, 0, 1);
+        pos = trans_mat * pos;
+        point.position = glm::vec3(pos.x, pos.y, pos.z);
+
+        point.rotAxis = glm::vec3(-pos.x, 0, -pos.z);
+        point.rotAngle = angle;
+
+        points[i] = point;
+    }
+    return points;
+}
+

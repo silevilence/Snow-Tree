@@ -53,12 +53,13 @@ int main(int argc, char *argv[]) {
     auto delta_time = 0.0;
     auto last_frame = 0.0;
 
-    Point points[] = {Point(glm::vec3(0, 0, 0), 1.1, glm::vec3(1), 0),
-                      Point(glm::vec3(0, 0.1, 0), 1, glm::vec3(0), 0),
-                      Point(glm::vec3(0, 0.9, 0), 1, glm::vec3(0), 0),
-                      Point(glm::vec3(0, 1, 0), 0.9, glm::vec3(1), 0),
-                      Point(glm::vec3(0, 1, 0), 0, glm::vec3(1), 0)};
-    Mesh tree = MyTree::Create_Cylinders(points, 5, 20);
+//    Point points[] = {Point(glm::vec3(0, 0, 0), 1.1, glm::vec3(1), 0),
+//                      Point(glm::vec3(0, 0.1, 0), 1, glm::vec3(0), 0),
+//                      Point(glm::vec3(0, 0.9, 0), 1, glm::vec3(0), 0),
+//                      Point(glm::vec3(0, 1, 0), 0.9, glm::vec3(1), 0),
+//                      Point(glm::vec3(0, 1, 0), 0, glm::vec3(1), 0)};
+    auto points = MyTree::generate_circular_helix(1, 10, 0.2, 0.1, 180);
+    Mesh tree = MyTree::Create_Cylinders(points, 180, 20);
     tree.setup_mesh();
 
     glm::vec3 lightPos = glm::vec3(2, 2, 2);
