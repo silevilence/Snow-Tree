@@ -9,14 +9,14 @@
 Vertex *MyTree::_Circle_Vertices(const Point &point, const int &precision) {
     auto vertices = new Vertex[precision];
 
-    glm::vec3 firstPoint = glm::vec3(1, 0, 0) * point.radius;
+    glm::vec3 firstPoint = glm::vec3(point.radius, 0, 0);
     auto firstPointV4 = glm::vec4(firstPoint, 1);
     for(int i = 0; i < precision; i++) {
         auto rotMat = glm::mat4(1);
         rotMat = glm::translate(rotMat, point.position);
-        rotMat = glm::rotate(rotMat, glm::radians(360.f * i / precision), glm::vec3(0, 1, 0));
         if(glm::vec3(0) != point.rotAxis)
             rotMat = glm::rotate(rotMat, glm::radians(point.rotAngle), point.rotAxis);
+        rotMat = glm::rotate(rotMat, glm::radians(360.f * i / precision), glm::vec3(0, 1, 0));
         glm::vec4 vertex4 = rotMat * firstPointV4;
         vertices[i].position = glm::vec3(vertex4.x, vertex4.y, vertex4.z);
         vertices[i].normal = glm::normalize(vertices[i].position - point.position);
@@ -59,9 +59,9 @@ int *MyTree::_Create_Cylinder_Triangles(int precision, int bottom_start = -1, in
     auto triangles = new int[precision * 6]; // 6 -> 2*3
     for(int i = 0; i < precision; i++) {
         triangles[i * 6] = triangles[i * 6 + 3] = i + bottom_start;
-        triangles[i * 6 + 1] = triangles[i * 6 + 5] = (i + 1) % precision + top_start;
-        triangles[i * 6 + 2] = i + top_start;
-        triangles[i * 6 + 4] = (i + 1) % precision + bottom_start;
+        triangles[i * 6 + 1] = i + top_start;
+        triangles[i * 6 + 2] = triangles[i * 6 + 4] = (i + 1) % precision + top_start;
+        triangles[i * 6 + 5] = (i + 1) % precision + bottom_start;
     }
 
     return triangles;
@@ -75,7 +75,8 @@ Point *MyTree::generate_circular_helix(const GLfloat &a, const GLfloat &omega, c
     }
 
     auto points = new Point[times];
-    auto angle = glm::degrees(glm::atan(H, 2 * glm::pi<GLfloat>() * a));
+    auto angle = (float) glm::degrees(atan2(H, 2 * glm::pi<GLfloat>() * a));
+    angle = 90 - angle;
 
     for(int i = 0; i < times; i++) {
         GLfloat degree = omega * i;
