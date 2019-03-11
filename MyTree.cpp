@@ -101,3 +101,49 @@ Point *MyTree::generate_circular_helix(const GLfloat &a, const GLfloat &omega, c
     return points;
 }
 
+Point *MyTree::generate_branch(const float &length, const glm::vec3 &start_direction, const float &start_radius,
+                               const int &seg_num, const float &curve_angle, const float &exp = 1) {
+    assert(length > 0 and start_direction != glm::vec3(0) and start_radius > 0 and seg_num > 0 and exp > 0);
+    auto points = new Point[seg_num + 1];
+
+    auto rot_axis = glm::normalize(glm::cross(glm::vec3(0, 1, 0), start_direction));
+    auto angle = acosf(glm::dot(glm::vec3(0, 1, 0), start_direction) / glm::sqrt(
+            start_direction.x * start_direction.x + start_direction.y * start_direction.y +
+            start_direction.z * start_direction.z));
+
+    auto mat = glm::mat4(1);
+    for(int seg_id = 1; seg_id <= seg_num; seg_id++) {
+        auto distance_delta = (glm::pow((float) seg_id / seg_num, exp) - glm::pow((float) (seg_id - 1) / seg_num, exp))
+                              * length;
+
+        // 在变换矩阵右边不停乘上新的变换，达到累加变换的效果
+        if(seg_id == 1) {
+            mat = glm::rotate(mat, angle, rot_axis);
+        } else {
+            mat = glm::rotate(mat, glm::radians(curve_angle), rot_axis);
+        }
+        mat = glm::translate(mat, glm::vec3(0, distance_delta, 0));
+
+        Point point;
+
+        auto pos = mat * glm::vec4(0, 0, 0, 1);
+        point.position = glm::vec3(pos.x, pos.y, pos.z);
+
+        point.radius = (seg_num - seg_id) * start_radius / seg_num;
+
+        point.rotAngle = 0;
+        point.rotAxis = glm::vec3(0);
+
+        points[seg_id] = point;
+    }
+
+    Point point;
+    point.position = glm::vec3(0);
+    point.radius = start_radius;
+    point.rotAxis = glm::vec3(0);
+    point.rotAngle = 0;
+    points[0] = point;
+
+    return points;
+}
+

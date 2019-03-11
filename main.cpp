@@ -44,7 +44,10 @@ int main(int argc, char *argv[]) {
 
     // OpenGL configuration
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    // todo: 不知道为什么要声明顺时针才能让逆时针的点正常渲染
+    glFrontFace(GL_CW);
     glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -77,9 +80,14 @@ int main(int argc, char *argv[]) {
 //                      Point(glm::vec3(0, 0, 0), 0, glm::vec3(0), 0)};
 //    Mesh tree = MyTree::Create_Cylinders(points, 2, 20);
 
-    int times = 72;
-    auto points = MyTree::generate_circular_helix(1, 10, 0.5, 0.1, times);
-    Mesh tree = MyTree::Create_Cylinders(points, times, 20);
+//    int times = 72;
+//    auto points = MyTree::generate_circular_helix(1, 10, 0.5, 0.1, times);
+//    Mesh tree = MyTree::Create_Cylinders(points, times, 20);
+
+    int seg_num = 10;
+    auto points = MyTree::generate_branch(1, glm::vec3(0, 1, .1), 0.2, seg_num, 5, .9f);
+    Mesh tree = MyTree::Create_Cylinders(points, seg_num + 1, 20);
+
     tree.setup_mesh();
 
     glm::vec3 lightPos = glm::vec3(2, 2, 2);
@@ -125,7 +133,7 @@ int main(int argc, char *argv[]) {
 
         // world transformation
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0, -0.2f, 0));
+        model = glm::translate(model, glm::vec3(0, -0.5f, 0));
 //        model = glm::rotate(model, glm::radians(45.f), glm::vec3(1, 0, 0));
         shader.set_matrix4("model", model);
         tree.draw(shader);
@@ -147,16 +155,16 @@ void key_callback(GLFWwindow *window, int key, int scancode, const int action, i
             if(action == GLFW_PRESS)
                 glfwSetWindowShouldClose(window, GL_TRUE);
             break;
-        case GLFW_KEY_E:
+        case GLFW_KEY_W:
             camera.process_keyboard(camera_movement::FORWARD, delta_time);
             break;
-        case GLFW_KEY_S:
+        case GLFW_KEY_A:
             camera.process_keyboard(camera_movement::LEFT, delta_time);
             break;
-        case GLFW_KEY_D:
+        case GLFW_KEY_S:
             camera.process_keyboard(camera_movement::BACKWARD, delta_time);
             break;
-        case GLFW_KEY_F:
+        case GLFW_KEY_D:
             camera.process_keyboard(camera_movement::RIGHT, delta_time);
             break;
         default:

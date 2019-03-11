@@ -26,8 +26,20 @@ public:
      */
     static Mesh Create_Cylinders(const Point *points, int pointNum, int precision);
 
+    /**!
+     * 生成圆柱螺旋线的点集
+     * @param a 圆柱的半径
+     * @param omega 每次转动的角度
+     * @param H 螺距
+     * @param radius 构成螺旋线的柱体的半径
+     * @param times 点的数量
+     * @return 点集
+     */
     static Point *
     generate_circular_helix(const GLfloat &a, const GLfloat &omega, const GLfloat &H, const GLfloat &radius, int times);
+
+    static Point *generate_branch(const float &length, const glm::vec3 &start_direction, const float &start_radius,
+                                  const int &seg_num, const float &curve_angle, const float &exp);
 
 private:
     /**!
