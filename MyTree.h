@@ -38,8 +38,13 @@ public:
     static Point *
     generate_circular_helix(const GLfloat &a, const GLfloat &omega, const GLfloat &H, const GLfloat &radius, int times);
 
-    static Point *generate_branch(const float &length, const glm::vec3 &start_direction, const float &start_radius,
-                                  const int &seg_num, const float &curve_angle, const float &exp);
+    static Point *
+    generate_branch(const float &length, const glm::vec3 &rot_axis, const float &start_angel, const float &start_radius,
+                    const int &seg_num, const float &curve_angle, const float &exp);
+
+    static Point *
+    generate_branch(const float &length, const glm::vec3 &start_direction, const float &start_radius,
+                    const int &seg_num, const float &curve_angle, const float &exp);
 
 private:
     /**!

@@ -17,10 +17,19 @@ public:
     int indices_num;
 
     Mesh();
+
+    Mesh(Mesh &&mesh) noexcept;
+
+    Mesh(const Mesh &mesh) noexcept;
+
     ~Mesh();
 
+    Mesh &operator=(Mesh &&other) noexcept;
+
     void setup_mesh();
+
     void draw(Shader shader);
+
 private:
     GLuint VAO, VBO, EBO;
     bool is_set;

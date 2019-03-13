@@ -48,6 +48,9 @@ int main(int argc, char *argv[]) {
     glFrontFace(GL_CW);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
+
+    glEnable(GL_DEPTH_TEST);
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -85,12 +88,27 @@ int main(int argc, char *argv[]) {
 //    Mesh tree = MyTree::Create_Cylinders(points, times, 20);
 
     int seg_num = 10;
-    auto points = MyTree::generate_branch(1, glm::vec3(0, 1, .1), 0.2, seg_num, 5, .9f);
-    Mesh tree = MyTree::Create_Cylinders(points, seg_num + 1, 20);
+    auto points = MyTree::generate_branch(2, glm::vec3(0, 0, -1), 1, 0.5, seg_num, 1, 2);
+    Mesh &&tree = MyTree::Create_Cylinders(points, seg_num + 1, 50);
 
     tree.setup_mesh();
+    delete points;
 
-    glm::vec3 lightPos = glm::vec3(2, 2, 2);
+    const int branch_num = 5;
+    Mesh branches[branch_num];
+    auto ps_branch = MyTree::generate_branch(1.5f, glm::vec3(0, 0, 1), 10, 0.1, seg_num, 2, 2);
+    for(auto &branch : branches) {
+        branch = std::move(MyTree::Create_Cylinders(ps_branch, seg_num + 1, 20));
+
+        branch.setup_mesh();
+    }
+//    Mesh &&branch = MyTree::Create_Cylinders(ps_branch, seg_num + 1, 20);
+
+//    branch.setup_mesh();
+
+    delete ps_branch;
+
+    glm::vec3 lightPos = glm::vec3(3, 3, 3);
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -133,10 +151,20 @@ int main(int argc, char *argv[]) {
 
         // world transformation
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0, -0.5f, 0));
+        model = glm::translate(model, glm::vec3(0, 0, 0));
 //        model = glm::rotate(model, glm::radians(45.f), glm::vec3(1, 0, 0));
         shader.set_matrix4("model", model);
         tree.draw(shader);
+
+        for(int i = 0; i < branch_num; i++) {
+            glm::mat4 model_branch = glm::mat4(1.0f);
+            model_branch = glm::translate(model_branch, glm::vec3(0, .1f + .2f * i, 0));
+            model_branch = glm::rotate(model_branch, glm::radians(360.f * i / branch_num), glm::vec3(0, 1, 0));
+            model_branch = glm::rotate(model_branch, glm::radians(80.f), glm::vec3(0, 0, -1));
+            shader.use();
+            shader.set_matrix4("model", model_branch);
+            branches[i].draw(shader);
+        }
 
         glfwSwapBuffers(window);
     }

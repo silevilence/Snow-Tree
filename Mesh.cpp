@@ -72,3 +72,45 @@ Mesh::~Mesh() {
         glDeleteBuffers(1, &EBO);
     }
 }
+
+Mesh &Mesh::operator=(Mesh &&other) noexcept {
+    if(this != &other) {
+        this->~Mesh();
+        this->is_set = false;
+
+        this->vertices = other.vertices;
+        this->vertices_num = other.vertices_num;
+        other.vertices = nullptr;
+
+        this->indices = other.indices;
+        this->indices_num = other.indices_num;
+        other.indices = nullptr;
+    }
+    return *this;
+}
+
+Mesh::Mesh(Mesh &&mesh) noexcept {
+    this->~Mesh();
+    this->is_set = false;
+
+    this->vertices = mesh.vertices;
+    this->vertices_num = mesh.vertices_num;
+    mesh.vertices = nullptr;
+
+    this->indices = mesh.indices;
+    this->indices_num = mesh.indices_num;
+    mesh.indices = nullptr;
+}
+
+Mesh::Mesh(const Mesh &mesh) noexcept {
+    this->~Mesh();
+    this->is_set = false;
+
+    vertices_num = mesh.vertices_num;
+    vertices = new Vertex[vertices_num];
+    memcpy(vertices, mesh.vertices, vertices_num * sizeof(Vertex));
+
+    indices_num = mesh.indices_num;
+    indices = new int[indices_num];
+    memcpy(indices, mesh.indices, indices_num * sizeof(int));
+}
