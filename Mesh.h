@@ -26,13 +26,17 @@ public:
 
     Mesh &operator=(Mesh &&other) noexcept;
 
-    void setup_mesh();
+    void setup_mesh(const bool &recalculate_normal = false);
 
     void draw(Shader shader);
 
 private:
     GLuint VAO, VBO, EBO;
     bool is_set;
+
+    void _clear_buffer();
+
+    void _recalculate_normal();
 };
 
 #endif //TREE_MESH_H

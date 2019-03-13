@@ -91,7 +91,7 @@ int main(int argc, char *argv[]) {
     auto points = MyTree::generate_branch(2, glm::vec3(0, 0, -1), 1, 0.5, seg_num, 1, 2);
     Mesh &&tree = MyTree::Create_Cylinders(points, seg_num + 1, 50);
 
-    tree.setup_mesh();
+    tree.setup_mesh(true);
     delete points;
 
     const int branch_num = 5;
@@ -100,7 +100,7 @@ int main(int argc, char *argv[]) {
     for(auto &branch : branches) {
         branch = std::move(MyTree::Create_Cylinders(ps_branch, seg_num + 1, 20));
 
-        branch.setup_mesh();
+        branch.setup_mesh(true);
     }
 //    Mesh &&branch = MyTree::Create_Cylinders(ps_branch, seg_num + 1, 20);
 
@@ -108,10 +108,10 @@ int main(int argc, char *argv[]) {
 
     delete ps_branch;
 
-    glm::vec3 lightPos = glm::vec3(3, 3, 3);
+    glm::vec3 lightPos = glm::vec3(10, 10, 10);
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+//    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     while(!glfwWindowShouldClose(window)) {
         const auto current_frame = GLfloat(glfwGetTime());
         delta_time += current_frame - last_frame;
@@ -158,7 +158,7 @@ int main(int argc, char *argv[]) {
 
         for(int i = 0; i < branch_num; i++) {
             glm::mat4 model_branch = glm::mat4(1.0f);
-            model_branch = glm::translate(model_branch, glm::vec3(0, .1f + .2f * i, 0));
+            model_branch = glm::translate(model_branch, glm::vec3(.1f, .1f + .2f * i, 0));
             model_branch = glm::rotate(model_branch, glm::radians(360.f * i / branch_num), glm::vec3(0, 1, 0));
             model_branch = glm::rotate(model_branch, glm::radians(80.f), glm::vec3(0, 0, -1));
             shader.use();

@@ -2,6 +2,8 @@
 // Created by lenovo on 2019/3/6.
 //
 
+#include <map>
+#include <vector>
 #include "Mesh.h"
 
 Mesh::Mesh() {
@@ -10,7 +12,12 @@ Mesh::Mesh() {
     is_set = false;
 }
 
-void Mesh::setup_mesh() {
+void Mesh::setup_mesh(const bool &recalculate_normal) {
+    _clear_buffer();
+
+    if(recalculate_normal)
+        _recalculate_normal();
+
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -36,6 +43,15 @@ void Mesh::setup_mesh() {
     glBindVertexArray(0);
 
     is_set = true;
+}
+
+void Mesh::_clear_buffer() {
+    if(is_set) {
+        glDeleteVertexArrays(1, &VAO);
+        glDeleteBuffers(1, &VBO);
+        glDeleteBuffers(1, &EBO);
+    }
+    is_set = false;
 }
 
 void Mesh::draw(Shader shader) {
@@ -66,11 +82,7 @@ void Mesh::draw(Shader shader) {
 Mesh::~Mesh() {
     delete vertices;
     delete indices;
-    if(is_set) {
-        glDeleteVertexArrays(1, &VAO);
-        glDeleteBuffers(1, &VBO);
-        glDeleteBuffers(1, &EBO);
-    }
+    _clear_buffer();
 }
 
 Mesh &Mesh::operator=(Mesh &&other) noexcept {
@@ -113,4 +125,44 @@ Mesh::Mesh(const Mesh &mesh) noexcept {
     indices_num = mesh.indices_num;
     indices = new int[indices_num];
     memcpy(indices, mesh.indices, indices_num * sizeof(int));
+}
+
+void Mesh::_recalculate_normal() {
+    // 从面片编号到面法向量的映射
+    std::map<int, glm::vec3> triangles_normal;
+    for(int i = 0; i < vertices_num; i++) {
+        // 首先取出含有该点的所有面
+        std::vector<int> triangles_index;
+        for(int j = 0; j < indices_num; j++) {
+            if(indices[j] == i) {
+                triangles_index.emplace_back(j / 3);
+            }
+        }
+
+        glm::vec3 normal = glm::vec3(0);
+        // 计算并累加面的法向量
+        for(auto index: triangles_index) {
+            // 若有，直接取出
+            if(triangles_normal.count(index) != 0) {
+                normal += triangles_normal[index];
+            } else {
+                glm::vec3 p_a = vertices[indices[index * 3]].position,
+                        p_b = vertices[indices[index * 3 + 1]].position,
+                        p_c = vertices[indices[index * 3 + 2]].position;
+                if(p_a == p_b or p_b == p_c) {
+                    triangles_normal[index] = glm::vec3(0);
+                    continue;
+                }
+                glm::vec3 &&p_ab = p_b - p_a,
+                        &&p_bc = p_c - p_b;
+                glm::vec3 &&tri_normal = glm::normalize(glm::cross(p_ab, p_bc));
+
+                normal += tri_normal;
+                triangles_normal[index] = tri_normal;
+            }
+        }
+
+        // 单位化
+        vertices[i].normal = glm::normalize(normal);
+    }
 }
