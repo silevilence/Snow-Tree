@@ -101,10 +101,10 @@ Point *MyTree::generate_circular_helix(const GLfloat &a, const GLfloat &omega, c
     return points;
 }
 
-Point *MyTree::generate_branch(const float &length, const glm::vec3 &rot_axis, const float &start_angle,
-                               const float &start_radius, const int &seg_num, const float &curve_angle,
-                               const float &exp = 1) {
-    assert(length > 0 and start_radius > 0 and seg_num > 0 and exp > 0);
+Point *MyTree::generate_branch(const float &length, const glm::vec3 &rot_axis, const float &start_angel,
+                               const float &start_radius, const float &end_radius, const int &seg_num,
+                               const float &curve_angle, const float &exp) {
+    assert(length > 0 and start_radius > end_radius and end_radius >= 0 and seg_num > 0 and exp > 0);
     auto points = new Point[seg_num + 1];
 
     auto mat = glm::mat4(1);
@@ -115,7 +115,7 @@ Point *MyTree::generate_branch(const float &length, const glm::vec3 &rot_axis, c
         // 在变换矩阵右边不停乘上新的变换，达到累加变换的效果
         if(rot_axis != glm::vec3(0)) {
             if(seg_id == 1) {
-                mat = glm::rotate(mat, glm::radians(start_angle), rot_axis);
+                mat = glm::rotate(mat, glm::radians(start_angel), rot_axis);
             } else {
                 mat = glm::rotate(mat, glm::radians(curve_angle), rot_axis);
             }
@@ -127,7 +127,7 @@ Point *MyTree::generate_branch(const float &length, const glm::vec3 &rot_axis, c
         auto pos = mat * glm::vec4(0, 0, 0, 1);
         point.position = glm::vec3(pos.x, pos.y, pos.z);
 
-        point.radius = (seg_num - seg_id) * start_radius / seg_num;
+        point.radius = (seg_num - seg_id) * (start_radius - end_radius) / seg_num + end_radius;
 
         point.rotAngle = 0;
         point.rotAxis = glm::vec3(0);
@@ -146,7 +146,8 @@ Point *MyTree::generate_branch(const float &length, const glm::vec3 &rot_axis, c
 }
 
 Point *MyTree::generate_branch(const float &length, const glm::vec3 &start_direction, const float &start_radius,
-                               const int &seg_num, const float &curve_angle, const float &exp = 1) {
+                               const float &end_radius, const int &seg_num, const float &curve_angle,
+                               const float &exp) {
     assert(start_direction != glm::vec3(0) and start_direction != glm::vec3(0, 1, 0));
 
     auto rot_axis = glm::normalize(glm::cross(glm::vec3(0, 1, 0), start_direction));
@@ -154,6 +155,6 @@ Point *MyTree::generate_branch(const float &length, const glm::vec3 &start_direc
             start_direction.x * start_direction.x + start_direction.y * start_direction.y +
             start_direction.z * start_direction.z));
 
-    return generate_branch(length, rot_axis, angle, start_radius, seg_num, curve_angle, exp);
+    return generate_branch(length, rot_axis, angle, start_radius, end_radius, seg_num, curve_angle, exp);
 }
 

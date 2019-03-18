@@ -17,7 +17,7 @@ foreach (_file ${RESOURCE_FILES})
 endforeach ()
 file(INSTALL ${RESOURCE_FILES} DESTINATION ${CMAKE_BINARY_DIR})
 
-set(SOURCE_FILES main.cpp glad.c ResourceManager.cpp Shader.cpp stb_image.cpp Texture2D.cpp Point.cpp MyTree.cpp Mesh.cpp)
+set(SOURCE_FILES main.cpp glad.c ResourceManager.cpp Shader.cpp stb_image.cpp Texture2D.cpp Point.cpp MyTree.cpp Mesh.cpp SimpleTree.cpp SimpleTreeBranch.cpp LSystem.cpp)
 
 add_executable(Tree ${SOURCE_FILES})
 

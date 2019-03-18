@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
 //    Mesh tree = MyTree::Create_Cylinders(points, times, 20);
 
     int seg_num = 10;
-    auto points = MyTree::generate_branch(2, glm::vec3(0, 0, -1), 1, 0.5, seg_num, 1, 2);
+    auto points = MyTree::generate_branch(2, glm::vec3(0, 0, -1), 1, 0.5, 0, seg_num, 1, 2);
     Mesh &&tree = MyTree::Create_Cylinders(points, seg_num + 1, 50);
 
     tree.setup_mesh(true);
@@ -96,7 +96,7 @@ int main(int argc, char *argv[]) {
 
     const int branch_num = 5;
     Mesh branches[branch_num];
-    auto ps_branch = MyTree::generate_branch(1.5f, glm::vec3(0, 0, 1), 10, 0.1, seg_num, 2, 2);
+    auto ps_branch = MyTree::generate_branch(1.5f, glm::vec3(0, 0, 1), 10, 0.1, 0, seg_num, 2, 2);
     for(auto &branch : branches) {
         branch = std::move(MyTree::Create_Cylinders(ps_branch, seg_num + 1, 20));
 

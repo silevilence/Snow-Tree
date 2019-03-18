@@ -26,6 +26,8 @@ public:
 
     Mesh &operator=(Mesh &&other) noexcept;
 
+    Mesh &operator=(const Mesh &mesh) noexcept;
+
     void setup_mesh(const bool &recalculate_normal = false);
 
     void draw(Shader shader);

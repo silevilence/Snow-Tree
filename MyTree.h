@@ -40,11 +40,13 @@ public:
 
     static Point *
     generate_branch(const float &length, const glm::vec3 &rot_axis, const float &start_angel, const float &start_radius,
-                    const int &seg_num, const float &curve_angle, const float &exp);
+                    const float &end_radius = 0, const int &seg_num = 10, const float &curve_angle = 1,
+                    const float &exp = 1);
 
     static Point *
     generate_branch(const float &length, const glm::vec3 &start_direction, const float &start_radius,
-                    const int &seg_num, const float &curve_angle, const float &exp);
+                       const float &end_radius, const int &seg_num = 10, const float &curve_angle = 1,
+                       const float &exp = 1);
 
 private:
     /**!

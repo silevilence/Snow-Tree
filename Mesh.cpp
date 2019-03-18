@@ -88,7 +88,6 @@ Mesh::~Mesh() {
 Mesh &Mesh::operator=(Mesh &&other) noexcept {
     if(this != &other) {
         this->~Mesh();
-        this->is_set = false;
 
         this->vertices = other.vertices;
         this->vertices_num = other.vertices_num;
@@ -98,12 +97,12 @@ Mesh &Mesh::operator=(Mesh &&other) noexcept {
         this->indices_num = other.indices_num;
         other.indices = nullptr;
     }
+
     return *this;
 }
 
 Mesh::Mesh(Mesh &&mesh) noexcept {
     this->~Mesh();
-    this->is_set = false;
 
     this->vertices = mesh.vertices;
     this->vertices_num = mesh.vertices_num;
@@ -116,7 +115,6 @@ Mesh::Mesh(Mesh &&mesh) noexcept {
 
 Mesh::Mesh(const Mesh &mesh) noexcept {
     this->~Mesh();
-    this->is_set = false;
 
     vertices_num = mesh.vertices_num;
     vertices = new Vertex[vertices_num];
@@ -165,4 +163,18 @@ void Mesh::_recalculate_normal() {
         // 单位化
         vertices[i].normal = glm::normalize(normal);
     }
+}
+
+Mesh &Mesh::operator=(const Mesh &mesh) noexcept {
+    this->~Mesh();
+
+    vertices_num = mesh.vertices_num;
+    vertices = new Vertex[vertices_num];
+    memcpy(vertices, mesh.vertices, vertices_num * sizeof(Vertex));
+
+    indices_num = mesh.indices_num;
+    indices = new int[indices_num];
+    memcpy(indices, mesh.indices, indices_num * sizeof(int));
+
+    return *this;
 }
