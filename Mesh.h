@@ -28,7 +28,7 @@ public:
 
     Mesh &operator=(const Mesh &mesh) noexcept;
 
-    void setup_mesh(const bool &recalculate_normal = false);
+    void setup_mesh(const bool &recalculate_normal = true, const bool &force = false);
 
     void draw(Shader shader);
 
@@ -39,6 +39,10 @@ private:
     void _clear_buffer();
 
     void _recalculate_normal();
+
+    inline void _move(Mesh &mesh);
+
+    inline void _copy(const Mesh &mesh);
 };
 
 #endif //TREE_MESH_H

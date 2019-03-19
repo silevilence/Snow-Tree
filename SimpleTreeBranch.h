@@ -13,9 +13,9 @@
 class SimpleTreeBranch {
 public:
     std::vector<Point> points;
-    glm::vec3 position;
-    float rot_z;
-    float rot_y;
+//    glm::vec3 position;
+//    float rot_z;
+//    float rot_y;
     unsigned int precision;
 
     SimpleTreeBranch(const std::vector<Point> &points, const glm::vec3 &position, float rot_z, float rot_y,
@@ -23,6 +23,8 @@ public:
 
     SimpleTreeBranch(const Point *points, unsigned int p_num, const glm::vec3 &position, float rot_z, float rot_y,
                      unsigned int precision = 20);
+
+    SimpleTreeBranch(const std::vector<Point> &points, const glm::mat4 &transform, unsigned int precision = 20);
 
     SimpleTreeBranch();
 
@@ -42,6 +44,7 @@ public:
 
 private:
     Mesh mesh;
+    glm::mat4 _transform;
 
     inline void _copy(const SimpleTreeBranch &branch);
 

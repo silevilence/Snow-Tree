@@ -12,8 +12,12 @@ Mesh::Mesh() {
     is_set = false;
 }
 
-void Mesh::setup_mesh(const bool &recalculate_normal) {
-    _clear_buffer();
+void Mesh::setup_mesh(const bool &recalculate_normal, const bool &force) {
+    if(force) {
+        _clear_buffer();
+    } else if(is_set) {
+        return;
+    }
 
     if(recalculate_normal)
         _recalculate_normal();
@@ -89,13 +93,7 @@ Mesh &Mesh::operator=(Mesh &&other) noexcept {
     if(this != &other) {
         this->~Mesh();
 
-        this->vertices = other.vertices;
-        this->vertices_num = other.vertices_num;
-        other.vertices = nullptr;
-
-        this->indices = other.indices;
-        this->indices_num = other.indices_num;
-        other.indices = nullptr;
+        _move(other);
     }
 
     return *this;
@@ -104,25 +102,13 @@ Mesh &Mesh::operator=(Mesh &&other) noexcept {
 Mesh::Mesh(Mesh &&mesh) noexcept {
     this->~Mesh();
 
-    this->vertices = mesh.vertices;
-    this->vertices_num = mesh.vertices_num;
-    mesh.vertices = nullptr;
-
-    this->indices = mesh.indices;
-    this->indices_num = mesh.indices_num;
-    mesh.indices = nullptr;
+    _move(mesh);
 }
 
 Mesh::Mesh(const Mesh &mesh) noexcept {
     this->~Mesh();
 
-    vertices_num = mesh.vertices_num;
-    vertices = new Vertex[vertices_num];
-    memcpy(vertices, mesh.vertices, vertices_num * sizeof(Vertex));
-
-    indices_num = mesh.indices_num;
-    indices = new int[indices_num];
-    memcpy(indices, mesh.indices, indices_num * sizeof(int));
+    _copy(mesh);
 }
 
 void Mesh::_recalculate_normal() {
@@ -168,6 +154,12 @@ void Mesh::_recalculate_normal() {
 Mesh &Mesh::operator=(const Mesh &mesh) noexcept {
     this->~Mesh();
 
+    _copy(mesh);
+
+    return *this;
+}
+
+void Mesh::_copy(const Mesh &mesh) {
     vertices_num = mesh.vertices_num;
     vertices = new Vertex[vertices_num];
     memcpy(vertices, mesh.vertices, vertices_num * sizeof(Vertex));
@@ -176,5 +168,21 @@ Mesh &Mesh::operator=(const Mesh &mesh) noexcept {
     indices = new int[indices_num];
     memcpy(indices, mesh.indices, indices_num * sizeof(int));
 
-    return *this;
+    this->setup_mesh();
+}
+
+void Mesh::_move(Mesh &mesh) {
+    this->vertices = mesh.vertices;
+    this->vertices_num = mesh.vertices_num;
+    mesh.vertices = nullptr;
+
+    this->indices = mesh.indices;
+    this->indices_num = mesh.indices_num;
+    mesh.indices = nullptr;
+
+    this->VAO = mesh.VAO;
+    this->VBO = mesh.VBO;
+    this->EBO = mesh.EBO;
+    this->is_set = mesh.is_set;
+    mesh.is_set = false;
 }
