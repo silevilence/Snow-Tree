@@ -107,7 +107,9 @@ SimpleTree LSystem::param_l_interpret(std::string str) {
     std::stack<glm::mat4> trans_stack;
     std::vector<SimpleTreeBranch> branches;
 
-    auto glPushMatrix = [&]()mutable { trans_stack.push(transform); };
+    auto glPushMatrix = [&]()mutable {
+        trans_stack.push(transform);
+    };
     auto glPopMatrix = [&]()mutable {
         transform = trans_stack.top();
         trans_stack.pop();

@@ -25,7 +25,8 @@ Vertex *MyTree::_Circle_Vertices(const Point &point, const int &precision) {
     return vertices;
 }
 
-Mesh MyTree::Create_Cylinders(const Point *points, int pointNum, int precision) {
+Mesh MyTree::Create_Cylinders(const Point *points, int pointNum, int precision, const bool &close_bottom,
+                              const bool &close_top) {
     Mesh mesh;
 
     auto vertices = new Vertex[pointNum * precision];
@@ -37,31 +38,78 @@ Mesh MyTree::Create_Cylinders(const Point *points, int pointNum, int precision) 
     mesh.vertices = vertices;
     mesh.vertices_num = precision * pointNum;
 
-    auto indices = new int[precision * 6 * (pointNum - 1)];
+    int triangles_num = precision * 2 * (pointNum - 1);
+    if(close_bottom)
+        triangles_num += precision - 2;
+    if(close_top)
+        triangles_num += precision - 2;
+    auto indices = new int[triangles_num * 3];
+    int offset = 0;
     for(int i = 0; i < pointNum - 1; i++) {
-        int *triangles = _Create_Cylinder_Triangles(precision, i * precision, (i + 1) * precision);
-        memcpy(indices + i * precision * 6, triangles, precision * 6 * sizeof(int));
+        bool cb = i == 0 ? close_bottom : false;
+        bool ct = i == pointNum - 2 ? close_top : false;
+
+        int t_size = precision * 2;
+        if(cb)
+            t_size += precision - 2;
+        if(ct)
+            t_size += precision - 2;
+
+        int *triangles = _Create_Cylinder_Triangles(precision, i * precision, (i + 1) * precision, cb, ct);
+        memcpy(indices + offset, triangles, t_size * 3 * sizeof(int));
         delete triangles;
+
+        offset += t_size * 3;
     }
     mesh.indices = indices;
-    mesh.indices_num = precision * 6 * (pointNum - 1);
+    mesh.indices_num = triangles_num * 3;
 
     return mesh;
 }
 
-int *MyTree::_Create_Cylinder_Triangles(int precision, int bottom_start = -1, int top_start = -1) {
+int *
+MyTree::_Create_Cylinder_Triangles(int precision, int bottom_start = -1, int top_start = -1, const bool &close_bottom,
+                                   const bool &close_top) {
     // check params
     if(bottom_start < 0)
         bottom_start = 0;
     if(top_start < 0)
         top_start = precision;
 
-    auto triangles = new int[precision * 6]; // 6 -> 2*3
+    int triangles_num = precision * 2;
+    if(precision > 2) {
+        if(close_bottom)
+            triangles_num += precision - 2;
+        if(close_top)
+            triangles_num += precision - 2;
+    }
+    auto triangles = new int[triangles_num * 3];
     for(int i = 0; i < precision; i++) {
         triangles[i * 6] = triangles[i * 6 + 3] = i + bottom_start;
         triangles[i * 6 + 1] = i + top_start;
         triangles[i * 6 + 2] = triangles[i * 6 + 4] = (i + 1) % precision + top_start;
         triangles[i * 6 + 5] = (i + 1) % precision + bottom_start;
+    }
+
+    // close bottom or top
+    if(precision > 2) {
+        int index = precision * 6;
+        if(close_bottom) {
+            for(int i = 0; i < precision - 2; i++) {
+                triangles[index] = bottom_start;
+                triangles[index + 1] = (i + 2) % precision + bottom_start;
+                triangles[index + 2] = (i + 1) % precision + bottom_start;
+                index += 3;
+            }
+        }
+        if(close_top) {
+            for(int i = 0; i < precision - 2; i++) {
+                triangles[index] = top_start;
+                triangles[index + 1] = (i + 2) % precision + top_start;
+                triangles[index + 2] = (i + 1) % precision + top_start;
+                index += 3;
+            }
+        }
     }
 
     return triangles;

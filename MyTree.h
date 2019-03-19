@@ -24,7 +24,9 @@ public:
      * @param precision 一个圆周的点的数量
      * @return 生成的圆柱网格
      */
-    static Mesh Create_Cylinders(const Point *points, int pointNum, int precision);
+    static Mesh
+    Create_Cylinders(const Point *points, int pointNum, int precision, const bool &close_bottom = false,
+                     const bool &close_top = true);
 
     /**!
      * 生成圆柱螺旋线的点集
@@ -45,8 +47,8 @@ public:
 
     static Point *
     generate_branch(const float &length, const glm::vec3 &start_direction, const float &start_radius,
-                       const float &end_radius, const int &seg_num = 10, const float &curve_angle = 1,
-                       const float &exp = 1);
+                    const float &end_radius, const int &seg_num = 10, const float &curve_angle = 1,
+                    const float &exp = 1);
 
 private:
     /**!
@@ -64,7 +66,9 @@ private:
      * @param top_start 顶部圆的点的起始索引
      * @return 生成的三角形数组
      */
-    static int *_Create_Cylinder_Triangles(int precision, int bottom_start, int top_start);
+    static int *
+    _Create_Cylinder_Triangles(int precision, int bottom_start, int top_start, const bool &close_bottom = false,
+                               const bool &close_top = true);
 };
 
 #endif //TREE_MYTREE_H

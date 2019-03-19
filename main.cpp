@@ -77,9 +77,9 @@ int main(int argc, char *argv[]) {
 //    Point points[] = {Point(glm::vec3(0, 0, 0), 1.1, glm::vec3(1), 0),
 //                      Point(glm::vec3(0, 0.1, 0), 1, glm::vec3(0), 0),
 //                      Point(glm::vec3(0, 0.9, 0), 1, glm::vec3(0), 0),
-//                      Point(glm::vec3(0, 1, 0), 0.9, glm::vec3(1), 0),
-//                      Point(glm::vec3(0, 1, 0), 0, glm::vec3(1), 0)};
-//    Mesh tree = MyTree::Create_Cylinders(points, 5, 20);
+//                      Point(glm::vec3(0, 1, 0), 0.9, glm::vec3(1), 0)};
+//    Mesh tree = MyTree::Create_Cylinders(points, 4, 20);
+//    tree.setup_mesh();
 
 //    Point points[] = {Point(glm::vec3(0, 0, 0), 1, glm::vec3(1,1,0), 25),
 //                      Point(glm::vec3(0, 0, 0), 0, glm::vec3(0), 0)};
@@ -157,13 +157,13 @@ int main(int argc, char *argv[]) {
 
         // world transformation
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0, 0, 0));
+        model = glm::translate(model, glm::vec3(0, -0.5f, 0));
 //        model = glm::rotate(model, glm::radians(45.f), glm::vec3(1, 0, 0));
         model = glm::scale(model, glm::vec3(0.05, 0.05, 0.05));
 //        shader.set_matrix4("model", model);
         tree.draw(model, shader);
 //        tree.draw(shader);
-//
+
 //        for(int i = 0; i < branch_num; i++) {
 //            glm::mat4 model_branch = glm::mat4(1.0f);
 //            model_branch = glm::translate(model_branch, glm::vec3(.1f, .1f + .2f * i, 0));
