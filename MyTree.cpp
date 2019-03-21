@@ -152,7 +152,7 @@ Point *MyTree::generate_circular_helix(const GLfloat &a, const GLfloat &omega, c
 Point *MyTree::generate_branch(const float &length, const glm::vec3 &rot_axis, const float &start_angel,
                                const float &start_radius, const float &end_radius, const int &seg_num,
                                const float &curve_angle, const float &exp) {
-    assert(length > 0 and start_radius > end_radius and end_radius >= 0 and seg_num > 0 and exp > 0);
+    assert(length > 0 and start_radius >= end_radius and end_radius >= 0 and seg_num > 0 and exp > 0);
     auto points = new Point[seg_num + 1];
 
     auto mat = glm::mat4(1);

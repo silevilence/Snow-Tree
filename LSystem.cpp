@@ -9,6 +9,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 
 #include "LSystem.h"
+#include "MyTree.h"
 
 using std::string;
 
@@ -124,8 +125,15 @@ SimpleTree LSystem::param_l_interpret(std::string str) {
         transform = glm::translate(transform, glm::vec3(x, y, z));
     };
     auto Frustum = [&](float bottom, float top, float height)mutable {
-        std::vector<Point> points{Point(glm::vec3(0), bottom, glm::vec3(0), 0),
-                                  Point(glm::vec3(0, height, 0), top, glm::vec3(0), 0)};
+        std::vector<Point> points;
+        if(1 >= height) {
+            points = {Point(glm::vec3(0), bottom, glm::vec3(0), 0),
+                      Point(glm::vec3(0, height, 0), top, glm::vec3(0), 0)};
+        } else {
+            auto bps = MyTree::generate_branch(height, glm::vec3(0), 0, bottom, top, (int) height, 0, 1);
+            points = std::vector<Point>(bps, bps + (int) height + 1);
+            delete bps;
+        }
         branches.emplace_back(points, transform, 20);
     };
     auto bezierLeafDisplay = [&]()mutable {
