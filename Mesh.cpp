@@ -29,7 +29,7 @@ void Mesh::setup_mesh(const bool &recalculate_normal, const bool &force) {
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, vertices_num * sizeof(Vertex), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vertices_num * sizeof(Vertex), vertices, GL_DYNAMIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices_num * sizeof(GLuint), indices, GL_STATIC_DRAW);
@@ -185,4 +185,17 @@ void Mesh::_move(Mesh &mesh) {
     this->EBO = mesh.EBO;
     this->is_set = mesh.is_set;
     mesh.is_set = false;
+}
+
+void Mesh::update_vertices_data(const bool &recalculate_normal) {
+    if(not is_set)
+        return;
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    void *p_vbo = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+    memcpy(p_vbo, vertices, vertices_num * sizeof(Vertex));
+    glUnmapBuffer(GL_ARRAY_BUFFER);
+
+    if(recalculate_normal)
+        this->_recalculate_normal();
 }

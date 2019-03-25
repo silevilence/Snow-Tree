@@ -117,7 +117,7 @@ int main(int argc, char *argv[]) {
     glm::vec3 lightPos = glm::vec3(10, 10, 10);
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+//    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     while(!glfwWindowShouldClose(window)) {
         const auto current_frame = GLfloat(glfwGetTime());
         delta_time += current_frame - last_frame;
@@ -138,6 +138,10 @@ int main(int argc, char *argv[]) {
             // Update
             delta_time = 0;
             frame_update++;
+
+            // 测试网格更新
+            tree.branches[0].points[0].position -= glm::vec3(0, 0.01, 0);
+            tree.branches[0].update_points();
         }
 
         // Draw

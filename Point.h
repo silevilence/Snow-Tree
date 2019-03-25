@@ -23,6 +23,10 @@ public:
     Point(const Point &point);
 
     Point &operator=(const Point &);
+
+    bool operator==(const Point &rhs) const;
+
+    bool operator!=(const Point &rhs) const;
 };
 
 #endif //TREE_POINT_H

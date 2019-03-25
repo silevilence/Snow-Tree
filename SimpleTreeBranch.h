@@ -42,6 +42,8 @@ public:
 
     void draw(const glm::mat4 &transform, Shader shader);
 
+    void update_points();
+
 private:
     Mesh mesh;
     glm::mat4 _transform;

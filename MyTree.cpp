@@ -6,7 +6,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "MyTree.h"
 
-Vertex *MyTree::_Circle_Vertices(const Point &point, const int &precision) {
+Vertex *MyTree::Circle_Vertices(const Point &point, const int &precision) {
     auto vertices = new Vertex[precision];
 
     glm::vec3 firstPoint = glm::vec3(point.radius, 0, 0);
@@ -31,7 +31,7 @@ Mesh MyTree::Create_Cylinders(const Point *points, int pointNum, int precision, 
 
     auto vertices = new Vertex[pointNum * precision];
     for(int i = 0; i < pointNum; i++) {
-        Vertex *single_vertices = _Circle_Vertices(points[i], precision);
+        Vertex *single_vertices = Circle_Vertices(points[i], precision);
         memcpy(vertices + i * precision, single_vertices, precision * sizeof(Vertex));
         delete single_vertices;
     }

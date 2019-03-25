@@ -77,6 +77,17 @@ SimpleTreeBranch::SimpleTreeBranch(const std::vector<Point> &points, const glm::
     this->generate_mesh();
 }
 
+void SimpleTreeBranch::update_points() {
+//    auto *vertices = new Vertex[points.size() * precision];
+    for(int i = 0; i < points.size(); i++) {
+        Vertex *single_vertices = MyTree::Circle_Vertices(points[i], precision);
+        memcpy(mesh.vertices + i * precision, single_vertices, precision * sizeof(Vertex));
+        delete single_vertices;
+    }
+
+    mesh.update_vertices_data();
+}
+
 SimpleTreeBranch &SimpleTreeBranch::operator=(const SimpleTreeBranch &branch) = default;
 
 SimpleTreeBranch::~SimpleTreeBranch() = default;

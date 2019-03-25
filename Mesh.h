@@ -30,6 +30,8 @@ public:
 
     void setup_mesh(const bool &recalculate_normal = true, const bool &force = false);
 
+    void update_vertices_data(const bool &recalculate_normal = true);
+
     void draw(Shader shader);
 
 private:

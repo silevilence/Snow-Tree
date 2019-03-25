@@ -31,6 +31,7 @@ public:
     static SimpleTree generate_simple_tree();
 
 private:
+public:
     std::vector<SimpleTreeBranch> branches;
 };
 

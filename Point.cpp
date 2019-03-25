@@ -18,6 +18,17 @@ Point::Point(const Point &point) {
     this->rotAngle = point.rotAngle;
 }
 
+bool Point::operator==(const Point &rhs) const {
+    return position == rhs.position &&
+           radius == rhs.radius &&
+           rotAxis == rhs.rotAxis &&
+           rotAngle == rhs.rotAngle;
+}
+
+bool Point::operator!=(const Point &rhs) const {
+    return !(rhs == *this);
+}
+
 Point &Point::operator=(const Point &point) = default;
 
 Point::Point() = default;
