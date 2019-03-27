@@ -118,6 +118,13 @@ int main(int argc, char *argv[]) {
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 //    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    // 变形、旋转
+    for(auto &point:tree.branches[0].points) {
+        auto rot = glm::rotate(glm::mat4(1), point.position.y / 20, glm::vec3(0, 0, -1));
+        auto pos4 = rot * glm::vec4(point.position, 1);
+        point.position = glm::vec3(pos4.x, pos4.y, pos4.z);
+    }
+    tree.branches[0].update_points();
     while(!glfwWindowShouldClose(window)) {
         const auto current_frame = GLfloat(glfwGetTime());
         delta_time += current_frame - last_frame;
@@ -140,8 +147,8 @@ int main(int argc, char *argv[]) {
             frame_update++;
 
             // 测试网格更新
-            tree.branches[0].points[0].position -= glm::vec3(0, 0.01, 0);
-            tree.branches[0].update_points();
+//            tree.branches[0].points[0].position -= glm::vec3(0, 0.01, 0);
+//            tree.branches[0].update_points();
         }
 
         // Draw

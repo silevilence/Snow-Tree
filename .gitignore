@@ -121,3 +121,5 @@ fabric.properties
 .idea/httpRequests
 
 *.iml
+
+.vscode
