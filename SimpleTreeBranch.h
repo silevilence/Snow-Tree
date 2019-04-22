@@ -48,9 +48,9 @@ private:
     Mesh mesh;
     glm::mat4 _transform;
 
-    inline void _copy(const SimpleTreeBranch &branch);
+    void _copy(const SimpleTreeBranch &branch);
 
-    inline void _move(SimpleTreeBranch &branch);
+    void _move(SimpleTreeBranch &branch);
 };
 
 

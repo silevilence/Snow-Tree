@@ -159,7 +159,7 @@ Mesh &Mesh::operator=(const Mesh &mesh) noexcept {
     return *this;
 }
 
-void Mesh::_copy(const Mesh &mesh) {
+inline void Mesh::_copy(const Mesh &mesh) {
     vertices_num = mesh.vertices_num;
     vertices = new Vertex[vertices_num];
     memcpy(vertices, mesh.vertices, vertices_num * sizeof(Vertex));
@@ -171,7 +171,7 @@ void Mesh::_copy(const Mesh &mesh) {
     this->setup_mesh();
 }
 
-void Mesh::_move(Mesh &mesh) {
+inline void Mesh::_move(Mesh &mesh) {
     this->vertices = mesh.vertices;
     this->vertices_num = mesh.vertices_num;
     mesh.vertices = nullptr;

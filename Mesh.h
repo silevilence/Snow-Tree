@@ -42,9 +42,9 @@ private:
 
     void _recalculate_normal();
 
-    inline void _move(Mesh &mesh);
+    void _move(Mesh &mesh);
 
-    inline void _copy(const Mesh &mesh);
+    void _copy(const Mesh &mesh);
 };
 
 #endif //TREE_MESH_H

@@ -177,8 +177,13 @@ Point *MyTree::generate_branch(const float &length, const glm::vec3 &rot_axis, c
 
         point.radius = (seg_num - seg_id) * (start_radius - end_radius) / seg_num + end_radius;
 
-        point.rotAngle = 0;
-        point.rotAxis = glm::vec3(0);
+
+        auto rotAxis = glm::normalize(glm::cross(glm::vec3(0, 1, 0), point.position));
+        auto angle = acosf(glm::dot(glm::vec3(0, 1, 0), point.position) / glm::sqrt(
+                point.position.x * point.position.x + point.position.y * point.position.y +
+                point.position.z * point.position.z));
+        point.rotAngle = start_angel + curve_angle * seg_id;
+        point.rotAxis = glm::vec3(0, 0, 1);
 
         points[seg_id] = point;
     }
@@ -186,8 +191,9 @@ Point *MyTree::generate_branch(const float &length, const glm::vec3 &rot_axis, c
     Point point;
     point.position = glm::vec3(0);
     point.radius = start_radius;
-    point.rotAxis = glm::vec3(0);
-    point.rotAngle = 0;
+    point.rotAxis = points[1].rotAxis;
+//    point.rotAxis = glm::vec3(0, 0, -1);
+    point.rotAngle = start_angel;
     points[0] = point;
 
     return points;

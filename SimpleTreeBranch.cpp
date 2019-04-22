@@ -3,6 +3,7 @@
 //
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <iostream>
 #include "SimpleTreeBranch.h"
 #include "MyTree.h"
 
@@ -34,7 +35,7 @@ void SimpleTreeBranch::generate_mesh(const bool &cal_normal) {
     this->mesh.setup_mesh(cal_normal);
 }
 
-void SimpleTreeBranch::_copy(const SimpleTreeBranch &branch) {
+inline void SimpleTreeBranch::_copy(const SimpleTreeBranch &branch) {
     points = branch.points;
     mesh = branch.mesh;
 //    position = branch.position;
@@ -44,7 +45,7 @@ void SimpleTreeBranch::_copy(const SimpleTreeBranch &branch) {
     _transform = branch._transform;
 }
 
-void SimpleTreeBranch::_move(SimpleTreeBranch &branch) {
+inline void SimpleTreeBranch::_move(SimpleTreeBranch &branch) {
     points = std::move(branch.points);
     mesh = std::move(branch.mesh);
 //    position = branch.position;
@@ -79,13 +80,15 @@ SimpleTreeBranch::SimpleTreeBranch(const std::vector<Point> &points, const glm::
 
 void SimpleTreeBranch::update_points() {
 //    auto *vertices = new Vertex[points.size() * precision];
-    for(int i = 0; i < points.size(); i++) {
-        Vertex *single_vertices = MyTree::Circle_Vertices(points[i], precision);
-        memcpy(mesh.vertices + i * precision, single_vertices, precision * sizeof(Vertex));
-        delete single_vertices;
-    }
+    auto mesh = MyTree::Create_Cylinders(&points[0], points.size(), precision);
+//    for(int i = 0; i < points.size(); i++) {
+//        Vertex *single_vertices = MyTree::Circle_Vertices(points[i], precision);
+//        memcpy(mesh.vertices + i * precision, single_vertices, precision * sizeof(Vertex));
+//        delete single_vertices;
+//    }
+    memcpy(this->mesh.vertices, mesh.vertices, this->mesh.vertices_num * sizeof(Vertex));
 
-    mesh.update_vertices_data();
+    this->mesh.update_vertices_data();
 }
 
 SimpleTreeBranch &SimpleTreeBranch::operator=(const SimpleTreeBranch &branch) = default;

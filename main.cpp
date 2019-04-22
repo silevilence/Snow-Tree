@@ -110,21 +110,38 @@ int main(int argc, char *argv[]) {
 //
 //    delete ps_branch;
 
-    auto tree_str = LSystem::param_iterator("A(0)", 5);
-    std::cout << tree_str << std::endl;
-    auto tree = LSystem::param_l_interpret(tree_str);
+//    auto tree_str = LSystem::param_iterator("A(0)", 5);
+//    std::cout << tree_str << std::endl;
+//    auto tree = LSystem::param_l_interpret(tree_str);
 
+    const int SEG = 10;
+    auto ps_branch = MyTree::generate_branch(2, glm::vec3(0, 0, 1), -90, 0.05, 0.05, SEG, 0, 1);
+//    auto branch = MyTree::Create_Cylinders(ps_branch, SEG + 1, 20);
+//    branch.setup_mesh();
+    std::vector<Point> points(ps_branch, ps_branch + SEG + 1);
+    delete ps_branch;
+    std::vector<SimpleTreeBranch> branches;
+    branches.emplace_back(points, glm::vec3(0), 0, 0);
+//    SimpleTreeBranch branch(points, glm::vec3(0), 90, 0);
+    SimpleTree tree(branches);
+
+    tree.branches[0].points[10].position -= glm::vec3(0, 1, 0);
+    tree.branches[0].points[9].position -= glm::vec3(0, 0.5, 0);
+    tree.branches[0].points[8].position -= glm::vec3(0, 0.3, 0);
+    tree.branches[0].update_points();
+
+//    glm::vec3 lightPos = glm::vec3(-10, -10, -10);
     glm::vec3 lightPos = glm::vec3(10, 10, 10);
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-//    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     // 变形、旋转
-    for(auto &point:tree.branches[0].points) {
-        auto rot = glm::rotate(glm::mat4(1), point.position.y / 20, glm::vec3(0, 0, -1));
-        auto pos4 = rot * glm::vec4(point.position, 1);
-        point.position = glm::vec3(pos4.x, pos4.y, pos4.z);
-    }
-    tree.branches[0].update_points();
+//    for(auto &point:tree.branches[0].points) {
+//        auto rot = glm::rotate(glm::mat4(1), point.position.y / 20, glm::vec3(0, 0, -1));
+//        auto pos4 = rot * glm::vec4(point.position, 1);
+//        point.position = glm::vec3(pos4.x, pos4.y, pos4.z);
+//    }
+//    tree.branches[0].update_points();
     while(!glfwWindowShouldClose(window)) {
         const auto current_frame = GLfloat(glfwGetTime());
         delta_time += current_frame - last_frame;
@@ -168,9 +185,9 @@ int main(int argc, char *argv[]) {
 
         // world transformation
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0, -0.5f, 0));
+//        model = glm::translate(model, glm::vec3(0, -0.5f, 0));
 //        model = glm::rotate(model, glm::radians(45.f), glm::vec3(1, 0, 0));
-        model = glm::scale(model, glm::vec3(0.05, 0.05, 0.05));
+//        model = glm::scale(model, glm::vec3(0.05, 0.05, 0.05));
 //        shader.set_matrix4("model", model);
         tree.draw(model, shader);
 //        tree.draw(shader);
