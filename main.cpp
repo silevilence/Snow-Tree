@@ -27,6 +27,10 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 
+float cal_omega(const float &E, const float &I, const float &q, const float &L, const float &x);
+
+float cal_theta(const float &E, const float &I, const float &q, const float &L, const float &x);
+
 int main(int argc, char *argv[]) {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -114,8 +118,9 @@ int main(int argc, char *argv[]) {
 //    std::cout << tree_str << std::endl;
 //    auto tree = LSystem::param_l_interpret(tree_str);
 
-    const int SEG = 10;
-    auto ps_branch = MyTree::generate_branch(2, glm::vec3(0, 0, 1), -90, 0.05, 0.05, SEG, 0, 1);
+    const int SEG = 20;
+    const float length = 2;
+    auto ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), -90, 0.05, 0.05, SEG, 0, 1);
 //    auto branch = MyTree::Create_Cylinders(ps_branch, SEG + 1, 20);
 //    branch.setup_mesh();
     std::vector<Point> points(ps_branch, ps_branch + SEG + 1);
@@ -125,10 +130,14 @@ int main(int argc, char *argv[]) {
 //    SimpleTreeBranch branch(points, glm::vec3(0), 90, 0);
     SimpleTree tree(branches);
 
-    tree.branches[0].points[10].position -= glm::vec3(0, 1, 0);
-    tree.branches[0].points[9].position -= glm::vec3(0, 0.5, 0);
-    tree.branches[0].points[8].position -= glm::vec3(0, 0.3, 0);
-    tree.branches[0].update_points();
+    const float E = 8.77e9,
+//            I = glm::pi<float>() * d ^ 4 / 64,
+            L = length;
+    float q = 1.f;
+//    tree.branches[0].points[10].position -= glm::vec3(0, 1, 0);
+//    tree.branches[0].points[9].position -= glm::vec3(0, 0.5, 0);
+//    tree.branches[0].points[8].position -= glm::vec3(0, 0.3, 0);
+//    tree.branches[0].update_points();
 
 //    glm::vec3 lightPos = glm::vec3(-10, -10, -10);
     glm::vec3 lightPos = glm::vec3(10, 10, 10);
@@ -166,6 +175,22 @@ int main(int argc, char *argv[]) {
             // 测试网格更新
 //            tree.branches[0].points[0].position -= glm::vec3(0, 0.01, 0);
 //            tree.branches[0].update_points();
+            q += 10;
+            for(int i = 0; i <= SEG; ++i) {
+                const float I = glm::pi<float>() * powf(tree.branches[0].points[i].radius, 4.f) / 4;
+                const float x = i * L / SEG;
+
+                float omega = cal_omega(E, I, q, L, x);
+                float theta = cal_theta(E, I, q, L, x);
+
+                tree.branches[0].points[i].position = glm::vec3(tree.branches[0].points[i].position.x, omega,
+                                                                tree.branches[0].points[i].position.z);
+                tree.branches[0].points[i].rotAngle = -90 - theta;
+
+//                if(i == 0)
+//                    std::cout << omega << ' ' << theta << std::endl;
+            }
+            tree.branches[0].update_points();
         }
 
         // Draw
@@ -250,4 +275,12 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
 
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
     camera.process_mouse_scroll((float) yoffset);
+}
+
+inline float cal_theta(const float &E, const float &I, const float &q, const float &L, const float &x) {
+    return q * (powf(L, 3.f) - powf(x, 3.f)) / (6 * E * I);
+}
+
+inline float cal_omega(const float &E, const float &I, const float &q, const float &L, const float &x) {
+    return q * (4 * powf(L, 3.f) * x - powf(x, 4.f) - 3 * powf(L, 4.f)) / (24 * E * I);
 }
