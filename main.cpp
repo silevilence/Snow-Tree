@@ -118,21 +118,25 @@ int main(int argc, char *argv[]) {
 //    std::cout << tree_str << std::endl;
 //    auto tree = LSystem::param_l_interpret(tree_str);
 
-    const int SEG = 20;
+    const int SEG = 25;
     const float length = 2;
-    auto ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), -90, 0.05, 0.05, SEG, 0, 1);
+    auto ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.05, 0.05, SEG, 0, 1);
 //    auto branch = MyTree::Create_Cylinders(ps_branch, SEG + 1, 20);
 //    branch.setup_mesh();
     std::vector<Point> points(ps_branch, ps_branch + SEG + 1);
     delete ps_branch;
     std::vector<SimpleTreeBranch> branches;
-    branches.emplace_back(points, glm::vec3(0), 0, 0);
+    float b_theta = 90.f;
+    branches.emplace_back(points, glm::vec3(0), b_theta, 0);
 //    SimpleTreeBranch branch(points, glm::vec3(0), 90, 0);
     SimpleTree tree(branches);
 
     const float E = 8.77e9,
 //            I = glm::pi<float>() * d ^ 4 / 64,
             L = length;
+    const float smin = 0.5f,
+            smax = 1.f,
+            epsilon3 = 2.f;
     float q = 1.f;
 //    tree.branches[0].points[10].position -= glm::vec3(0, 1, 0);
 //    tree.branches[0].points[9].position -= glm::vec3(0, 0.5, 0);
@@ -151,6 +155,12 @@ int main(int argc, char *argv[]) {
 //        point.position = glm::vec3(pos4.x, pos4.y, pos4.z);
 //    }
 //    tree.branches[0].update_points();
+    bool stop = false;
+    float threshold = fabsf(L * cosf(glm::radians(b_theta)));
+    if(threshold < 1e-5) {
+        threshold = L;
+    }
+//    std::cout << threshold << std::endl;
     while(!glfwWindowShouldClose(window)) {
         const auto current_frame = GLfloat(glfwGetTime());
         delta_time += current_frame - last_frame;
@@ -175,22 +185,38 @@ int main(int argc, char *argv[]) {
             // 测试网格更新
 //            tree.branches[0].points[0].position -= glm::vec3(0, 0.01, 0);
 //            tree.branches[0].update_points();
-            q += 10;
-            for(int i = 0; i <= SEG; ++i) {
-                const float I = glm::pi<float>() * powf(tree.branches[0].points[i].radius, 4.f) / 4;
-                const float x = i * L / SEG;
+            if(not stop) {
+                q += 10;
+                for(int i = 0; i <= SEG; ++i) {
+                    const float I = glm::pi<float>() * powf(tree.branches[0].points[i].radius, 4.f) / 4;
+                    const float x = L - i * L / SEG;
 
-                float omega = cal_omega(E, I, q, L, x);
-                float theta = cal_theta(E, I, q, L, x);
+                    // Non-uniform Materials Within a Domain
+                    float ti = powf(x / L, epsilon3);
+                    float si = (1 - ti) * smin + ti * smax;
 
-                tree.branches[0].points[i].position = glm::vec3(tree.branches[0].points[i].position.x, omega,
-                                                                tree.branches[0].points[i].position.z);
-                tree.branches[0].points[i].rotAngle = -90 - theta;
+                    float q_vert = q * sinf(glm::radians(b_theta));
+                    float q_hori = q * cosf(glm::radians(b_theta));
+                    float omega = cal_omega(si * E, I, q_vert, L, x);
+                    float theta = cal_theta(si * E, I, q_vert, L, x);
+
+                    if(fabsf(omega) >= threshold) {
+                        stop = true;
+//                        std::cout << "stop" << std::endl;
+                    }
+
+//                if(i == SEG)
+//                    std::cout << omega << std::endl;
+
+                    tree.branches[0].points[i].position = glm::vec3(-omega, tree.branches[0].points[i].position.y,
+                                                                    tree.branches[0].points[i].position.z);
+                    tree.branches[0].points[i].rotAngle = -theta;
 
 //                if(i == 0)
 //                    std::cout << omega << ' ' << theta << std::endl;
+                }
+                tree.branches[0].update_points();
             }
-            tree.branches[0].update_points();
         }
 
         // Draw
