@@ -51,7 +51,8 @@ public:
     static Point *
     generate_branch(const float &length, const glm::vec3 &rot_axis, const float &start_angel, const float &start_radius,
                     const float &end_radius = 0, const int &seg_num = 10, const float &curve_angle = 1,
-                    const float &exp = 1);
+                    const float &exp = 1, const float &base_e = 8.77e9, const float &s_min = 0.5f,
+                    const float &s_max = 1.f, const float &epsilon3 = 2.f);
 
     static Point *
     generate_branch(const float &length, const glm::vec3 &start_direction, const float &start_radius,

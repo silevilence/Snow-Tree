@@ -120,24 +120,43 @@ int main(int argc, char *argv[]) {
 
     const int SEG = 25;
     const float length = 2;
-    auto ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.05, 0.05, SEG, 0, 1);
+
+    auto ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.07, 0.05, SEG, 0, 1, 8.77e9, 0.5f, 1.f,
+                                             2.f);
 //    auto branch = MyTree::Create_Cylinders(ps_branch, SEG + 1, 20);
 //    branch.setup_mesh();
     std::vector<Point> points(ps_branch, ps_branch + SEG + 1);
     delete ps_branch;
     std::vector<SimpleTreeBranch> branches;
     float b_theta = 90.f;
-    branches.emplace_back(points, glm::vec3(0), b_theta, 0);
+    branches.emplace_back(points, glm::vec3(0), b_theta, 0, 20, length);
 //    SimpleTreeBranch branch(points, glm::vec3(0), 90, 0);
     SimpleTree tree(branches);
 
-    const float E = 8.77e9,
-//            I = glm::pi<float>() * d ^ 4 / 64,
-            L = length;
-    const float smin = 0.5f,
-            smax = 1.f,
-            epsilon3 = 2.f;
+    auto ps_branch2 = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.07, 0.05, SEG, 0, 1, 8.77e9, 1.f, 1.f,
+                                              2.f);
+//    auto branch = MyTree::Create_Cylinders(ps_branch, SEG + 1, 20);
+//    branch.setup_mesh();
+    std::vector<Point> points2(ps_branch2, ps_branch2 + SEG + 1);
+    delete ps_branch2;
+    std::vector<SimpleTreeBranch> branches2;
+    branches2.emplace_back(points2, glm::vec3(0), b_theta, 0, 20, length);
+//    SimpleTreeBranch branch(points, glm::vec3(0), 90, 0);
+    SimpleTree tree2(branches2);
+
+//    const float E = 8.77e9,
+////            I = glm::pi<float>() * d ^ 4 / 64,
+//            L = length;
+//    const float smin = 0.5f,
+//            smax = 1.f,
+//            epsilon3 = 2.f;
     float q = 1.f;
+
+//    for(int i = 0; i <= SEG; ++i) {
+//        std::cout << tree.branches[0].points[i].E << ' ';
+//    }
+//    std::cout << std::endl;
+
 //    tree.branches[0].points[10].position -= glm::vec3(0, 1, 0);
 //    tree.branches[0].points[9].position -= glm::vec3(0, 0.5, 0);
 //    tree.branches[0].points[8].position -= glm::vec3(0, 0.3, 0);
@@ -156,10 +175,10 @@ int main(int argc, char *argv[]) {
 //    }
 //    tree.branches[0].update_points();
     bool stop = false;
-    float threshold = fabsf(L * cosf(glm::radians(b_theta)));
-    if(threshold < 1e-5) {
-        threshold = L;
-    }
+//    float threshold = fabsf(L * cosf(glm::radians(b_theta)));
+//    if(threshold < 1e-5) {
+//        threshold = L;
+//    }
 //    std::cout << threshold << std::endl;
     while(!glfwWindowShouldClose(window)) {
         const auto current_frame = GLfloat(glfwGetTime());
@@ -178,45 +197,43 @@ int main(int argc, char *argv[]) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         if(fps_limit <= 0 || delta_time * fps_limit >= 1.0) {
-            // Update
-            delta_time = 0;
-            frame_update++;
-
-            // 测试网格更新
+            // 网格更新
 //            tree.branches[0].points[0].position -= glm::vec3(0, 0.01, 0);
 //            tree.branches[0].update_points();
             if(not stop) {
-                q += 10;
-                for(int i = 0; i <= SEG; ++i) {
-                    const float I = glm::pi<float>() * powf(tree.branches[0].points[i].radius, 4.f) / 4;
-                    const float x = L - i * L / SEG;
-
-                    // Non-uniform Materials Within a Domain
-                    float ti = powf(x / L, epsilon3);
-                    float si = (1 - ti) * smin + ti * smax;
-
-                    float q_vert = q * sinf(glm::radians(b_theta));
-                    float q_hori = q * cosf(glm::radians(b_theta));
-                    float omega = cal_omega(si * E, I, q_vert, L, x);
-                    float theta = cal_theta(si * E, I, q_vert, L, x);
-
-                    if(fabsf(omega) >= threshold) {
-                        stop = true;
-//                        std::cout << "stop" << std::endl;
-                    }
-
-//                if(i == SEG)
-//                    std::cout << omega << std::endl;
-
-                    tree.branches[0].points[i].position = glm::vec3(-omega, tree.branches[0].points[i].position.y,
-                                                                    tree.branches[0].points[i].position.z);
-                    tree.branches[0].points[i].rotAngle = -theta;
-
-//                if(i == 0)
-//                    std::cout << omega << ' ' << theta << std::endl;
-                }
-                tree.branches[0].update_points();
+                q += 600 * delta_time;
+                stop = tree.branches[0].uniform_load_pressure(q);
+                stop = stop or tree2.branches[0].uniform_load_pressure(q);
+//                for(int i = 0; i <= SEG; ++i) {
+//                    const float I = glm::pi<float>() * powf(tree.branches[0].points[i].radius, 4.f) / 4;
+//                    const float x = L - i * L / SEG;
+//
+//                    float q_vert = q * sinf(glm::radians(b_theta));
+////                    float q_hori = q * cosf(glm::radians(b_theta));
+//                    float omega = cal_omega(tree.branches[0].points[i].E, I, q_vert, L, x);
+//                    float theta = cal_theta(tree.branches[0].points[i].E, I, q_vert, L, x);
+//
+//                    if(fabsf(omega) >= threshold) {
+//                        stop = true;
+////                        std::cout << "stop" << std::endl;
+//                    }
+//
+////                if(i == SEG)
+////                    std::cout << omega << std::endl;
+//
+//                    tree.branches[0].points[i].position = glm::vec3(-omega, tree.branches[0].points[i].position.y,
+//                                                                    tree.branches[0].points[i].position.z);
+//                    tree.branches[0].points[i].rotAngle = -theta;
+//
+////                if(i == 0)
+////                    std::cout << omega << ' ' << theta << std::endl;
+//                }
+//                tree.branches[0].update_points();
             }
+
+            // Update
+            delta_time = 0;
+            frame_update++;
         }
 
         // Draw
@@ -241,6 +258,7 @@ int main(int argc, char *argv[]) {
 //        model = glm::scale(model, glm::vec3(0.05, 0.05, 0.05));
 //        shader.set_matrix4("model", model);
         tree.draw(model, shader);
+        tree2.draw(model, shader);
 //        tree.draw(shader);
 
 //        for(int i = 0; i < branch_num; i++) {

@@ -4,6 +4,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <iostream>
 #include "MyTree.h"
 
 Vertex *MyTree::Circle_Vertices(const Point &point, const int &precision) {
@@ -151,14 +152,20 @@ Point *MyTree::generate_circular_helix(const GLfloat &a, const GLfloat &omega, c
 
 Point *MyTree::generate_branch(const float &length, const glm::vec3 &rot_axis, const float &start_angel,
                                const float &start_radius, const float &end_radius, const int &seg_num,
-                               const float &curve_angle, const float &exp) {
+                               const float &curve_angle, const float &exp, const float &base_e, const float &s_min,
+                               const float &s_max, const float &epsilon3) {
     assert(length > 0 and start_radius >= end_radius and end_radius >= 0 and seg_num > 0 and exp > 0);
     auto points = new Point[seg_num + 1];
 
     auto mat = glm::mat4(1);
+    float x = 0;
     for(int seg_id = 1; seg_id <= seg_num; seg_id++) {
         auto distance_delta = (glm::pow((float) seg_id / seg_num, exp) - glm::pow((float) (seg_id - 1) / seg_num, exp))
                               * length;
+        x += distance_delta;
+//        std::cout << x << std::endl;
+
+        float ti = powf(1 - x / length, epsilon3);
 
         // 在变换矩阵右边不停乘上新的变换，达到累加变换的效果
         if(rot_axis != glm::vec3(0)) {
@@ -184,6 +191,9 @@ Point *MyTree::generate_branch(const float &length, const glm::vec3 &rot_axis, c
                 point.position.z * point.position.z));
         point.rotAngle = start_angel + curve_angle * seg_id;
         point.rotAxis = glm::vec3(0, 0, 1);
+        point.E = base_e * ((1 - ti) * s_min + ti * s_max);
+
+//        std::cout << point.E << std::endl;
 
         points[seg_id] = point;
     }
@@ -194,6 +204,7 @@ Point *MyTree::generate_branch(const float &length, const glm::vec3 &rot_axis, c
     point.rotAxis = points[1].rotAxis;
 //    point.rotAxis = glm::vec3(0, 0, -1);
     point.rotAngle = start_angel;
+    point.E = base_e * s_max;
     points[0] = point;
 
     return points;

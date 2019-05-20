@@ -7,6 +7,7 @@
 
 
 #include <vector>
+#include <memory>
 #include "Mesh.h"
 #include "Point.h"
 
@@ -18,13 +19,17 @@ public:
 //    float rot_y;
     unsigned int precision;
 
+    float b_theta;
+    float length;
+
     SimpleTreeBranch(const std::vector<Point> &points, const glm::vec3 &position, float rot_z, float rot_y,
-                     unsigned int precision = 20);
+                     unsigned int precision = 20, float length = 2);
 
     SimpleTreeBranch(const Point *points, unsigned int p_num, const glm::vec3 &position, float rot_z, float rot_y,
-                     unsigned int precision = 20);
+                     unsigned int precision = 20, float length = 2);
 
-    SimpleTreeBranch(const std::vector<Point> &points, const glm::mat4 &transform, unsigned int precision = 20);
+    SimpleTreeBranch(const std::vector<Point> &points, const glm::mat4 &transform, unsigned int precision = 20,
+                     float b_theta = 0, float length = 2);
 
     SimpleTreeBranch();
 
@@ -43,6 +48,8 @@ public:
     void draw(const glm::mat4 &transform, Shader shader);
 
     void update_points();
+
+    bool uniform_load_pressure(const float &q);
 
 private:
     Mesh mesh;
