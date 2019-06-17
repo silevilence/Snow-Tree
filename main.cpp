@@ -121,7 +121,8 @@ int main(int argc, char *argv[]) {
     const int SEG = 25;
     const float length = 2;
 
-    auto ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.07, 0.05, SEG, 0, 1, 8.77e9, 0.5f, 1.f,
+    // root branch
+    auto ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.1, 0.08, SEG, 0, 1, 8.77e9, 0.5f, 1.f,
                                              2.f);
 //    auto branch = MyTree::Create_Cylinders(ps_branch, SEG + 1, 20);
 //    branch.setup_mesh();
@@ -129,20 +130,37 @@ int main(int argc, char *argv[]) {
     delete ps_branch;
     std::vector<SimpleTreeBranch> branches;
     float b_theta = 90.f;
-    branches.emplace_back(points, glm::vec3(0), b_theta, 0, 20, length);
+    branches.emplace_back(points, glm::vec3(0), 0, 0, 20, length);
 //    SimpleTreeBranch branch(points, glm::vec3(0), 90, 0);
     SimpleTree tree(branches);
+    tree.branches[0].update_points();
 
-    auto ps_branch2 = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.07, 0.05, SEG, 0, 1, 8.77e9, 1.f, 1.f,
-                                              2.f);
-//    auto branch = MyTree::Create_Cylinders(ps_branch, SEG + 1, 20);
-//    branch.setup_mesh();
-    std::vector<Point> points2(ps_branch2, ps_branch2 + SEG + 1);
-    delete ps_branch2;
-    std::vector<SimpleTreeBranch> branches2;
-    branches2.emplace_back(points2, glm::vec3(0), b_theta, 0, 20, length);
-//    SimpleTreeBranch branch(points, glm::vec3(0), 90, 0);
-    SimpleTree tree2(branches2);
+    // child1, up
+    ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.08, 0.05, SEG, 0, 1, 8.77e9, 0.5f, 1.f, 2.f);
+    std::vector<Point> points_ch1(ps_branch, ps_branch + SEG + 1);
+    delete ps_branch;
+    SimpleTreeBranch b_ch1(points_ch1, glm::vec3(0), 0, 0, 20, length);
+    b_ch1.update_points();
+    tree.branches[0].add_child(b_ch1);
+
+    // child2, right
+    ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.08, 0.05, SEG, 0, 1, 8.77e9, 0.5f, 1.f, 2.f);
+    std::vector<Point> points_ch2(ps_branch, ps_branch + SEG + 1);
+    delete ps_branch;
+    SimpleTreeBranch b_ch2(points_ch2, glm::vec3(0), b_theta, 0, 20, length);
+    b_ch2.update_points();
+    tree.branches[0].add_child(b_ch2);
+
+//    auto ps_branch2 = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.07, 0.05, SEG, 0, 1, 8.77e9, 1.f, 1.f,
+//                                              2.f);
+////    auto branch = MyTree::Create_Cylinders(ps_branch, SEG + 1, 20);
+////    branch.setup_mesh();
+//    std::vector<Point> points2(ps_branch2, ps_branch2 + SEG + 1);
+//    delete ps_branch2;
+//    std::vector<SimpleTreeBranch> branches2;
+//    branches2.emplace_back(points2, glm::vec3(0), b_theta, 0, 20, length);
+////    SimpleTreeBranch branch(points, glm::vec3(0), 90, 0);
+//    SimpleTree tree2(branches2);
 
 //    const float E = 8.77e9,
 ////            I = glm::pi<float>() * d ^ 4 / 64,
@@ -201,9 +219,15 @@ int main(int argc, char *argv[]) {
 //            tree.branches[0].points[0].position -= glm::vec3(0, 0.01, 0);
 //            tree.branches[0].update_points();
             if(not stop) {
-                q += 600 * delta_time;
-                stop = tree.branches[0].uniform_load_pressure(q);
-                stop = stop or tree2.branches[0].uniform_load_pressure(q);
+                q += 300 * delta_time;
+//                stop = true;
+//                stop = stop or tree.branches[0].uniform_load_pressure(q, 90);
+                auto ps = b_ch2.points.size() - 1;
+                auto force = b_ch2.points[ps].position - b_ch2.points[0].position;
+                auto angle = glm::degrees(atanf(force.y / force.x)) + b_theta;
+                stop = stop or tree.branches[0].concentrated_load_pressure(q * b_ch2.length, angle);
+                stop = stop or b_ch2.uniform_load_pressure(q);
+//                stop = stop or tree2.branches[0].uniform_load_pressure(q);
 //                for(int i = 0; i <= SEG; ++i) {
 //                    const float I = glm::pi<float>() * powf(tree.branches[0].points[i].radius, 4.f) / 4;
 //                    const float x = L - i * L / SEG;
@@ -258,7 +282,7 @@ int main(int argc, char *argv[]) {
 //        model = glm::scale(model, glm::vec3(0.05, 0.05, 0.05));
 //        shader.set_matrix4("model", model);
         tree.draw(model, shader);
-        tree2.draw(model, shader);
+//        tree2.draw(model, shader);
 //        tree.draw(shader);
 
 //        for(int i = 0; i < branch_num; i++) {

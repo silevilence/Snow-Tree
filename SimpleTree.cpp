@@ -1,3 +1,5 @@
+#include <utility>
+
 //
 // Created by lenovo on 2019/3/14.
 //
@@ -5,7 +7,7 @@
 #include "SimpleTree.h"
 #include "MyTree.h"
 
-SimpleTree::SimpleTree(const std::vector<SimpleTreeBranch> &branches) : branches(branches) {
+SimpleTree::SimpleTree(std::vector<SimpleTreeBranch> branches) : branches(std::move(branches)) {
 }
 
 void SimpleTree::draw(const glm::mat4 &transform, Shader shader) {

@@ -12,7 +12,7 @@
 
 class SimpleTree {
 public:
-    explicit SimpleTree(const std::vector<SimpleTreeBranch> &branches);
+    explicit SimpleTree(std::vector<SimpleTreeBranch> branches);
 
     SimpleTree(const SimpleTreeBranch *branches, const unsigned int &b_num);
 

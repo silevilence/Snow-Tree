@@ -17,18 +17,21 @@ public:
 //    glm::vec3 position;
 //    float rot_z;
 //    float rot_y;
-    unsigned int precision;
+    unsigned int precision{};
 
-    float b_theta;
-    float length;
+    float b_theta{};
+    float length{};
 
-    SimpleTreeBranch(const std::vector<Point> &points, const glm::vec3 &position, float rot_z, float rot_y,
+    SimpleTreeBranch *parent{};
+    std::vector<SimpleTreeBranch *> children;
+
+    SimpleTreeBranch(std::vector<Point> points, const glm::vec3 &position, float rot_z, float rot_y,
                      unsigned int precision = 20, float length = 2);
 
     SimpleTreeBranch(const Point *points, unsigned int p_num, const glm::vec3 &position, float rot_z, float rot_y,
                      unsigned int precision = 20, float length = 2);
 
-    SimpleTreeBranch(const std::vector<Point> &points, const glm::mat4 &transform, unsigned int precision = 20,
+    SimpleTreeBranch(std::vector<Point> points, const glm::mat4 &transform, unsigned int precision = 20,
                      float b_theta = 0, float length = 2);
 
     SimpleTreeBranch();
@@ -50,6 +53,12 @@ public:
     void update_points();
 
     bool uniform_load_pressure(const float &q);
+
+    bool uniform_load_pressure(const float &q, const float &q_theta);
+
+    bool concentrated_load_pressure(const float &F, const float &f_theta);
+
+    void add_child(SimpleTreeBranch &branch);
 
 private:
     Mesh mesh;
