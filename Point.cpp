@@ -10,6 +10,7 @@ Point::Point(const glm::vec3 &position, GLfloat radius, const glm::vec3 &rotAxis
     this->radius = radius;
     this->rotAxis = rotAxis;
     this->rotAngle = rotAngle;
+    this->ori_angle = rotAngle;
     this->E = E;
 }
 
@@ -19,6 +20,7 @@ Point::Point(const Point &point) {
     this->radius = point.radius;
     this->rotAxis = point.rotAxis;
     this->rotAngle = point.rotAngle;
+    this->ori_angle = point.ori_angle;
     this->E = point.E;
 }
 
@@ -28,6 +30,7 @@ bool Point::operator==(const Point &rhs) const {
            radius == rhs.radius &&
            rotAxis == rhs.rotAxis &&
            rotAngle == rhs.rotAngle &&
+           ori_angle == rhs.ori_angle &&
            E == rhs.E;
 }
 

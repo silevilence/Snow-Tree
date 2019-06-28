@@ -54,15 +54,23 @@ public:
 
     bool uniform_load_pressure(const float &q);
 
-    bool uniform_load_pressure(const float &q, const float &q_theta);
+    bool uniform_load_pressure(const float &q, float q_theta);
 
-    bool concentrated_load_pressure(const float &F, const float &f_theta);
+    bool concentrated_load_pressure(const float &F, float f_theta);
+
+    void add_concentrated_force(const float &F, float f_theta);
+
+    void reset(const bool &recursive = true);
+
+    bool complete_calculate(const bool &recursive = true);
 
     void add_child(SimpleTreeBranch &branch);
 
 private:
     Mesh mesh;
     glm::mat4 _transform;
+
+    glm::vec3 force_sum;
 
     void _copy(const SimpleTreeBranch &branch);
 

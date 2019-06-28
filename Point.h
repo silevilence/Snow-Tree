@@ -12,10 +12,11 @@ class Point {
 public:
     glm::vec3 position;
     glm::vec3 ori_pos;
-    GLfloat radius;
+    GLfloat radius{};
     glm::vec3 rotAxis;
-    GLfloat rotAngle;
-    GLfloat E;
+    GLfloat rotAngle{};
+    GLfloat ori_angle{};
+    GLfloat E{};
 
     // constructors
     Point(const glm::vec3 &position, GLfloat radius, const glm::vec3 &rotAxis, GLfloat rotAngle, GLfloat E = 8.77e9);

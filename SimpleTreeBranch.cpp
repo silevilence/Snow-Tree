@@ -101,7 +101,8 @@ void SimpleTreeBranch::draw(const glm::mat4 &transform, Shader shader) {
         auto model = glm::translate(glm::mat4(1.0f), point.position);
         model = glm::rotate(model, point.rotAngle, point.rotAxis);
 
-        model = _transform * model * transform;
+//        model = _transform * model * transform;
+        model = transform * _transform * model;
         for(const auto &branch_ptr : children) {
             branch_ptr->draw(model, shader);
         }
@@ -134,8 +135,13 @@ bool SimpleTreeBranch::uniform_load_pressure(const float &q) {
     return uniform_load_pressure(q, b_theta);
 }
 
-bool SimpleTreeBranch::uniform_load_pressure(const float &q, const float &q_theta) {
-//    bool stop = false;
+bool SimpleTreeBranch::uniform_load_pressure(const float &q, float q_theta) {
+    while(q_theta > 180)
+        q_theta -= 360;
+    while(q_theta < -180)
+        q_theta += 360;
+
+    bool stop = false;
     float threshold = fabsf(length * cosf(glm::radians(q_theta)));
     if(threshold < 1e-5) {
         threshold = length;
@@ -151,22 +157,32 @@ bool SimpleTreeBranch::uniform_load_pressure(const float &q, const float &q_thet
         float theta = uniform_load_theta(this->points[i].E, I, q_vert, length, x);
 
         if(fabsf(omega) >= threshold) {
-            return true;
+            stop = true;
 //                        std::cout << "stop" << std::endl;
         }
 
 //                if(i == SEG)
 //                    std::cout << omega << std::endl;
 
-        this->points[i].position = glm::vec3(-omega, this->points[i].position.y, this->points[i].position.z);
-        this->points[i].rotAngle = -theta;
+        this->points[i].position += glm::vec3(-omega, 0, 0);
+        this->points[i].rotAngle += -theta;
 
 //                if(i == 0)
 //                    std::cout << omega << ' ' << q_theta << std::endl;
     }
 
     this->update_points();
-    return false;
+
+    // 力传导
+    if(parent != nullptr) {
+        auto ps = points.size() - 1;
+        auto force = points[ps].position - points[0].position;
+        auto angle = fabsf(glm::degrees(atanf(force.y / force.x)) + b_theta);
+        stop = parent->concentrated_load_pressure(q * length, angle) or stop;
+//        parent->add_concentrated_force(q * length, angle);
+    }
+
+    return stop;
 }
 
 void SimpleTreeBranch::add_child(SimpleTreeBranch &branch) {
@@ -175,7 +191,13 @@ void SimpleTreeBranch::add_child(SimpleTreeBranch &branch) {
     branch.parent = this;
 }
 
-bool SimpleTreeBranch::concentrated_load_pressure(const float &F, const float &f_theta) {
+bool SimpleTreeBranch::concentrated_load_pressure(const float &F, float f_theta) {
+    while(f_theta > 180)
+        f_theta -= 360;
+    while(f_theta < -180)
+        f_theta += 360;
+
+    bool stop = false;
     float threshold = fabsf(length * cosf(glm::radians(f_theta)));
     if(threshold < 1e-5) {
         threshold = length;
@@ -190,15 +212,61 @@ bool SimpleTreeBranch::concentrated_load_pressure(const float &F, const float &f
         float theta = concentrated_load_theta(this->points[i].E, I, f_vert, length, x);
 
         if(fabsf(omega) >= threshold) {
-            return true;
+            stop = true;
         }
 
-        this->points[i].position = glm::vec3(-omega, this->points[i].position.y, this->points[i].position.z);
-        this->points[i].rotAngle = -theta;
+        this->points[i].position += glm::vec3(-omega, 0, 0);
+        this->points[i].rotAngle += -theta;
     }
 
     this->update_points();
-    return false;
+
+    // 力传导
+    if(parent != nullptr) {
+        auto ps = points.size() - 1;
+        auto force = points[ps].position - points[0].position;
+        auto angle = fabsf(glm::degrees(atanf(force.y / force.x)) + b_theta);
+        stop = parent->concentrated_load_pressure(F, angle) or stop;
+//        parent->add_concentrated_force(F, angle);
+    }
+
+    return stop;
+}
+
+void SimpleTreeBranch::reset(const bool &recursive) {
+    for(auto &point : points) {
+        point.position = point.ori_pos;
+        point.rotAngle = point.ori_angle;
+    }
+
+    force_sum = glm::vec3(0);
+
+    if(recursive and (not children.empty())) {
+        for(auto &child : children) {
+            child->reset(true);
+        }
+    }
+}
+
+bool SimpleTreeBranch::complete_calculate(const bool &recursive) {
+    bool stop = false;
+
+    this->update_points();
+
+    if(recursive and (not children.empty())) {
+        for(auto &child : children) {
+            stop = child->complete_calculate(true) or stop;
+        }
+    }
+
+    return stop;
+}
+
+void SimpleTreeBranch::add_concentrated_force(const float &F, float f_theta) {
+    while(f_theta > 180)
+        f_theta -= 360;
+    while(f_theta < -180)
+        f_theta += 360;
 }
 
 SimpleTreeBranch &SimpleTreeBranch::operator=(const SimpleTreeBranch &branch) = default;

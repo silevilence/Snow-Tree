@@ -50,3 +50,9 @@ SimpleTree &SimpleTree::operator=(SimpleTree &&tree) noexcept {
     return *this;
 }
 
+void SimpleTree::reset() {
+    for(auto & branch : branches) {
+        branch.reset(true);
+    }
+}
+

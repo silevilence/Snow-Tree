@@ -28,6 +28,8 @@ public:
 
     void draw(const glm::mat4 &transform, Shader shader);
 
+    void reset();
+
     static SimpleTree generate_simple_tree();
 
 private:
