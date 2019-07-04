@@ -72,6 +72,8 @@ private:
 
     glm::vec3 force_sum;
 
+    bool changed;
+
     void _copy(const SimpleTreeBranch &branch);
 
     void _move(SimpleTreeBranch &branch);

@@ -51,8 +51,18 @@ SimpleTree &SimpleTree::operator=(SimpleTree &&tree) noexcept {
 }
 
 void SimpleTree::reset() {
-    for(auto & branch : branches) {
+    for(auto &branch : branches) {
         branch.reset(true);
     }
+}
+
+bool SimpleTree::complete_calculate() {
+    bool stop = false;
+
+    for(auto & branch : branches) {
+        stop = branch.complete_calculate(true) or stop;
+    }
+
+    return stop;
 }
 

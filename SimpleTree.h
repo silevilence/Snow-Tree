@@ -30,6 +30,8 @@ public:
 
     void reset();
 
+    bool complete_calculate();
+
     static SimpleTree generate_simple_tree();
 
 private:

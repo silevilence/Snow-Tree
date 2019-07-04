@@ -273,6 +273,7 @@ int main(int argc, char *argv[]) {
 //        threshold = L;
 //    }
 //    std::cout << threshold << std::endl;
+//    std::cout << tree.branches[0].points[tree.branches[0].points.size() - 1].position.x << std::endl;
     while(!glfwWindowShouldClose(window)) {
         const auto current_frame = GLfloat(glfwGetTime());
         delta_time += current_frame - last_frame;
@@ -308,6 +309,12 @@ int main(int argc, char *argv[]) {
                 stop = b_ch31.uniform_load_pressure(q) or stop;
                 stop = b_ch41.uniform_load_pressure(q, 30) or stop;
                 stop = b_ch51.uniform_load_pressure(q) or stop;
+
+                stop = tree.complete_calculate() or stop;
+
+                if(stop) {
+                    std::cout << tree.branches[0].points[tree.branches[0].points.size() - 1].position.x << std::endl;
+                }
 //                stop = stop or tree2.branches[0].uniform_load_pressure(q);
 //                for(int i = 0; i <= SEG; ++i) {
 //                    const float I = glm::pi<float>() * powf(tree.branches[0].points[i].radius, 4.f) / 4;

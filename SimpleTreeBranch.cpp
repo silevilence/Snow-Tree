@@ -27,6 +27,8 @@ SimpleTreeBranch::SimpleTreeBranch(std::vector<Point> points, const glm::vec3 &p
     this->b_theta = rot_z;
     this->length = length;
 
+    changed = false;
+
     this->generate_mesh();
 }
 
@@ -171,7 +173,7 @@ bool SimpleTreeBranch::uniform_load_pressure(const float &q, float q_theta) {
 //                    std::cout << omega << ' ' << q_theta << std::endl;
     }
 
-    this->update_points();
+//    this->update_points();
 
     // 力传导
     if(parent != nullptr) {
@@ -181,6 +183,8 @@ bool SimpleTreeBranch::uniform_load_pressure(const float &q, float q_theta) {
         stop = parent->concentrated_load_pressure(q * length, angle) or stop;
 //        parent->add_concentrated_force(q * length, angle);
     }
+
+    changed = true;
 
     return stop;
 }
@@ -219,7 +223,7 @@ bool SimpleTreeBranch::concentrated_load_pressure(const float &F, float f_theta)
         this->points[i].rotAngle += -theta;
     }
 
-    this->update_points();
+//    this->update_points();
 
     // 力传导
     if(parent != nullptr) {
@@ -229,6 +233,8 @@ bool SimpleTreeBranch::concentrated_load_pressure(const float &F, float f_theta)
         stop = parent->concentrated_load_pressure(F, angle) or stop;
 //        parent->add_concentrated_force(F, angle);
     }
+
+    changed = true;
 
     return stop;
 }
@@ -240,6 +246,7 @@ void SimpleTreeBranch::reset(const bool &recursive) {
     }
 
     force_sum = glm::vec3(0);
+    changed = false;
 
     if(recursive and (not children.empty())) {
         for(auto &child : children) {
@@ -251,7 +258,15 @@ void SimpleTreeBranch::reset(const bool &recursive) {
 bool SimpleTreeBranch::complete_calculate(const bool &recursive) {
     bool stop = false;
 
-    this->update_points();
+//    if(force_sum.x != 0 or force_sum.y != 0) {
+//        float F = sqrtf(powf(force_sum.x, 2) + powf(force_sum.y, 2));
+//        float angle = acosf(force_sum.y / F);
+//
+//        stop = this->concentrated_load_pressure(F, angle) or stop;
+//    }
+
+    if(changed)
+        this->update_points();
 
     if(recursive and (not children.empty())) {
         for(auto &child : children) {
@@ -263,10 +278,7 @@ bool SimpleTreeBranch::complete_calculate(const bool &recursive) {
 }
 
 void SimpleTreeBranch::add_concentrated_force(const float &F, float f_theta) {
-    while(f_theta > 180)
-        f_theta -= 360;
-    while(f_theta < -180)
-        f_theta += 360;
+    this->force_sum += glm::vec3(sinf(f_theta), cosf(f_theta), 0) * F;
 }
 
 SimpleTreeBranch &SimpleTreeBranch::operator=(const SimpleTreeBranch &branch) = default;
