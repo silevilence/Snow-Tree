@@ -17,8 +17,11 @@ float concentrated_load_theta(const float &E, const float &I, const float &F, co
 
 float concentrated_load_omega(const float &E, const float &I, const float &F, const float &L, const float &x);
 
+const float RADIUS_THRESHOLD = 0.1f;
+
 SimpleTreeBranch::SimpleTreeBranch(std::vector<Point> points, const glm::vec3 &position, float rot_z,
-                                   float rot_y, unsigned int precision, float length) : points(std::move(points)),
+                                   float rot_y, unsigned int precision, float length) : points(
+        std::move(points)),
                                                                                         precision(precision) {
     _transform = glm::translate(glm::mat4(1), position);
     _transform = glm::rotate(_transform, glm::radians(rot_y), glm::vec3(0, 1, 0));
@@ -83,7 +86,8 @@ inline void SimpleTreeBranch::_move(SimpleTreeBranch &branch) {
 
 SimpleTreeBranch::SimpleTreeBranch(const Point *const points, unsigned int p_num, const glm::vec3 &position,
                                    float rot_z, float rot_y, unsigned int precision, float length) {
-    new(this)SimpleTreeBranch(std::vector<Point>(points, points + p_num), position, rot_z, rot_y, precision, length);
+    new(this)SimpleTreeBranch(std::vector<Point>(points, points + p_num), position, rot_z, rot_y, precision,
+                              length);
 //    this->generate_mesh();
 }
 
@@ -112,9 +116,12 @@ void SimpleTreeBranch::draw(const glm::mat4 &transform, Shader shader) {
 }
 
 SimpleTreeBranch::SimpleTreeBranch(std::vector<Point> points, const glm::mat4 &transform,
-                                   unsigned int precision, float b_theta, float length) : points(std::move(points)),
-                                                                                          _transform(transform),
-                                                                                          precision(precision),
+                                   unsigned int precision, float b_theta, float length) : points(
+        std::move(points)),
+                                                                                          _transform(
+                                                                                                  transform),
+                                                                                          precision(
+                                                                                                  precision),
                                                                                           b_theta(b_theta),
                                                                                           length(length) {
     this->generate_mesh();
@@ -150,7 +157,9 @@ bool SimpleTreeBranch::uniform_load_pressure(const float &q, float q_theta) {
     }
 
     for(int i = 0; i < points.size(); ++i) {
-        const float I = glm::pi<float>() * powf(this->points[i].radius, 4.f) / 4;
+        const float r =
+                this->points[i].radius < RADIUS_THRESHOLD ? RADIUS_THRESHOLD : this->points[i].radius;
+        const float I = glm::pi<float>() * powf(r, 4.f) / 4;
         const float x = length - i * length / points.size() - 1;
 
         float q_vert = q * sinf(glm::radians(q_theta));
@@ -208,7 +217,9 @@ bool SimpleTreeBranch::concentrated_load_pressure(const float &F, float f_theta)
     }
 
     for(int i = 0; i < points.size(); ++i) {
-        const float I = glm::pi<float>() * powf(this->points[i].radius, 4.f) / 4;
+        const float r =
+                this->points[i].radius < RADIUS_THRESHOLD ? RADIUS_THRESHOLD : this->points[i].radius;
+        const float I = glm::pi<float>() * powf(r, 4.f) / 4;
         const float x = length - i * length / points.size() - 1;
 
         float f_vert = F * sinf(glm::radians(f_theta));
@@ -287,18 +298,22 @@ SimpleTreeBranch::~SimpleTreeBranch() = default;
 
 SimpleTreeBranch::SimpleTreeBranch() = default;
 
-inline float uniform_load_theta(const float &E, const float &I, const float &q, const float &L, const float &x) {
+inline float
+uniform_load_theta(const float &E, const float &I, const float &q, const float &L, const float &x) {
     return q * (powf(L, 3.f) - powf(x, 3.f)) / (6 * E * I);
 }
 
-inline float uniform_load_omega(const float &E, const float &I, const float &q, const float &L, const float &x) {
+inline float
+uniform_load_omega(const float &E, const float &I, const float &q, const float &L, const float &x) {
     return q * (4 * powf(L, 3.f) * x - powf(x, 4.f) - 3 * powf(L, 4.f)) / (24 * E * I);
 }
 
-inline float concentrated_load_theta(const float &E, const float &I, const float &F, const float &L, const float &x) {
+inline float
+concentrated_load_theta(const float &E, const float &I, const float &F, const float &L, const float &x) {
     return F * L * (L - x) / (E * I);
 }
 
-inline float concentrated_load_omega(const float &E, const float &I, const float &F, const float &L, const float &x) {
+inline float
+concentrated_load_omega(const float &E, const float &I, const float &F, const float &L, const float &x) {
     return -F * L * powf(x - L, 2.f) / (2 * E * I);
 }

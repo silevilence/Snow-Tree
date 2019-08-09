@@ -119,11 +119,11 @@ int main(int argc, char *argv[]) {
 //    auto tree = LSystem::param_l_interpret(tree_str);
 
     const int SEG = 25;
-    const float length = 2;
+    const float length = 1;
 
     // root branch
-    auto ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.1, 0.08, SEG, 0, 1, 8.77e9, 0.5f, 1.f,
-                                             2.f);
+    auto ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.1, 0.09, SEG, 0, 1, 8.77e9,
+                                             1.f, 1.f, 2.f);
 //    auto branch = MyTree::Create_Cylinders(ps_branch, SEG + 1, 20);
 //    branch.setup_mesh();
     std::vector<Point> points(ps_branch, ps_branch + SEG + 1);
@@ -134,96 +134,253 @@ int main(int argc, char *argv[]) {
 //    SimpleTreeBranch branch(points, glm::vec3(0), 90, 0);
     SimpleTree tree(branches);
     tree.branches[0].update_points();
+    auto &branch1 = tree.branches[0];
 
-    // child1, up
-    ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.08, 0.05, SEG, 0, 1, 8.77e9, 0.5f, 1.f, 2.f);
-    std::vector<Point> points_ch1(ps_branch, ps_branch + SEG + 1);
-    delete ps_branch;
-    SimpleTreeBranch b_ch1(points_ch1, glm::vec3(0), 0, 0, 20, length);
-    b_ch1.update_points();
-    tree.branches[0].add_child(b_ch1);
-
-    // child2, right
-    ps_branch = MyTree::generate_branch(length / 5, glm::vec3(0, 0, 1), 0, 0.08, 0.07, SEG, 0, 1, 8.77e9, 1.f, 1.f,
-                                        2.f);
+    // branch2
+    ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.08, 0.07, SEG, 0, 1, 8.77e9, 1.f,
+                                        1.f, 2.f);
     std::vector<Point> points_ch2(ps_branch, ps_branch + SEG + 1);
     delete ps_branch;
-    SimpleTreeBranch b_ch2(points_ch2, glm::vec3(0), b_theta, 0, 20, length / 5);
-    b_ch2.update_points();
-    tree.branches[0].add_child(b_ch2);
+    SimpleTreeBranch branch2(points_ch2, glm::vec3(0), 40, 0, 20, length);
+    branch2.update_points();
+    branch1.add_child(branch2);
 
-    // child2-1, up
-    ps_branch = MyTree::generate_branch(length / 5, glm::vec3(0, 0, 1), 0, 0.04, 0.02, SEG, 0, 1, 8.77e9, 0.7f, 1.f,
-                                        2.f);
-    std::vector<Point> points_ch21(ps_branch, ps_branch + SEG + 1);
-    delete ps_branch;
-    SimpleTreeBranch b_ch21(points_ch21, glm::vec3(0), -30, 0, 20, length / 5);
-    b_ch21.update_points();
-    b_ch2.add_child(b_ch21);
-
-    // child3, right
-    ps_branch = MyTree::generate_branch(length / 5, glm::vec3(0, 0, 1), 0, 0.07, 0.06, SEG, 0, 1, 8.77e9, 1.f, 1.f,
-                                        2.f);
+    // branch3
+    ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.07, 0.05, SEG, 0, 1, 8.77e9, 1.f,
+                                        1.f, 2.f);
     std::vector<Point> points_ch3(ps_branch, ps_branch + SEG + 1);
     delete ps_branch;
-    SimpleTreeBranch b_ch3(points_ch3, glm::vec3(0), 0, 0, 20, length / 5);
-    b_ch3.update_points();
-    b_ch2.add_child(b_ch3);
+    SimpleTreeBranch branch3(points_ch3, glm::vec3(0), 20, 0, 20, length);
+    branch3.update_points();
+    branch2.add_child(branch3);
 
-    // child3-1, down
-    ps_branch = MyTree::generate_branch(length / 5, glm::vec3(0, 0, 1), 0, 0.04, 0.02, SEG, 0, 1, 8.77e9, 0.7f, 1.f,
-                                        2.f);
-    std::vector<Point> points_ch31(ps_branch, ps_branch + SEG + 1);
-    delete ps_branch;
-    SimpleTreeBranch b_ch31(points_ch31, glm::vec3(0), 30, 0, 20, length / 5);
-    b_ch31.update_points();
-    b_ch3.add_child(b_ch31);
-
-    // child4, right
-    ps_branch = MyTree::generate_branch(length / 5, glm::vec3(0, 0, 1), 0, 0.06, 0.05, SEG, 0, 1, 8.77e9, 1.f, 1.f,
-                                        2.f);
+    // branch4
+    ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.05, 0.04, SEG, 0, 1, 8.77e9, 1.f,
+                                        1.f, 2.f);
     std::vector<Point> points_ch4(ps_branch, ps_branch + SEG + 1);
     delete ps_branch;
-    SimpleTreeBranch b_ch4(points_ch4, glm::vec3(0), 0, 0, 20, length / 5);
-    b_ch4.update_points();
-    b_ch3.add_child(b_ch4);
+    SimpleTreeBranch branch4(points_ch4, glm::vec3(0), 10, 0, 20, length);
+    branch4.update_points();
+    branch3.add_child(branch4);
 
-    // child4-1, up
-    ps_branch = MyTree::generate_branch(length / 5, glm::vec3(0, 0, 1), 0, 0.04, 0.02, SEG, 0, 1, 8.77e9, 0.7f, 1.f,
-                                        2.f);
-    std::vector<Point> points_ch41(ps_branch, ps_branch + SEG + 1);
-    delete ps_branch;
-    SimpleTreeBranch b_ch41(points_ch41, glm::vec3(0), -30, 0, 20, length / 5);
-    b_ch41.update_points();
-    b_ch4.add_child(b_ch41);
-
-    // child5, right
-    ps_branch = MyTree::generate_branch(length / 5, glm::vec3(0, 0, 1), 0, 0.05, 0.04, SEG, 0, 1, 8.77e9, 1.f, 1.f,
-                                        2.f);
+    // branch5
+    ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.04, 0., SEG, 0, 1, 8.77e9, 1.f,
+                                        1.f, 2.f);
     std::vector<Point> points_ch5(ps_branch, ps_branch + SEG + 1);
     delete ps_branch;
-    SimpleTreeBranch b_ch5(points_ch5, glm::vec3(0), 0, 0, 20, length / 5);
-    b_ch5.update_points();
-    b_ch4.add_child(b_ch5);
+    SimpleTreeBranch branch5(points_ch5, glm::vec3(0), 20, 0, 20, length);
+    branch5.update_points();
+    branch4.add_child(branch5);
 
-    // child5-1, down
-    ps_branch = MyTree::generate_branch(length / 5, glm::vec3(0, 0, 1), 0, 0.04, 0.02, SEG, 0, 1, 8.77e9, 0.7f, 1.f,
-                                        2.f);
-    std::vector<Point> points_ch51(ps_branch, ps_branch + SEG + 1);
-    delete ps_branch;
-    SimpleTreeBranch b_ch51(points_ch51, glm::vec3(0), 30, 0, 20, length / 5);
-    b_ch51.update_points();
-    b_ch5.add_child(b_ch51);
+    //--------------------------------------
 
-    // child6, right
-    ps_branch = MyTree::generate_branch(length / 5, glm::vec3(0, 0, 1), 0, 0.04, 0.03, SEG, 0, 1, 8.77e9, 1.f, 1.f,
-                                        2.f);
+    // branch6
+    ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.04, 0., SEG, 0, 1, 8.77e9, 1.f,
+                                        1.f, 2.f);
     std::vector<Point> points_ch6(ps_branch, ps_branch + SEG + 1);
     delete ps_branch;
-    SimpleTreeBranch b_ch6(points_ch6, glm::vec3(0), 0, 0, 20, length / 5);
-    b_ch6.update_points();
-    b_ch5.add_child(b_ch6);
+    SimpleTreeBranch branch6(points_ch6, glm::vec3(0), -10, 0, 20, length);
+    branch6.update_points();
+    branch4.add_child(branch6);
 
+    // branch7
+    ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.07, 0.05, SEG, 0, 1, 8.77e9, 1.f,
+                                        1.f, 2.f);
+    std::vector<Point> points_ch7(ps_branch, ps_branch + SEG + 1);
+    delete ps_branch;
+    SimpleTreeBranch branch7(points_ch7, glm::vec3(0), -10, 0, 20, length);
+    branch7.update_points();
+    branch2.add_child(branch7);
+
+    // branch8
+    ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.05, 0., SEG, 0, 1, 8.77e9, 1.f,
+                                        1.f, 2.f);
+    std::vector<Point> points_ch8(ps_branch, ps_branch + SEG + 1);
+    delete ps_branch;
+    SimpleTreeBranch branch8(points_ch8, glm::vec3(0), 10, 0, 20, length);
+    branch8.update_points();
+    branch7.add_child(branch8);
+
+    // branch9
+    ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.05, 0., SEG, 0, 1, 8.77e9, 1.f,
+                                        1.f, 2.f);
+    std::vector<Point> points_ch9(ps_branch, ps_branch + SEG + 1);
+    delete ps_branch;
+    SimpleTreeBranch branch9(points_ch9, glm::vec3(0), -20, 0, 20, length);
+    branch9.update_points();
+    branch7.add_child(branch9);
+
+    //------------------------------------
+
+    // branch10
+    ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.08, 0.07, SEG, 0, 1, 8.77e9, 1.f,
+                                        1.f, 2.f);
+    std::vector<Point> points_ch10(ps_branch, ps_branch + SEG + 1);
+    delete ps_branch;
+    SimpleTreeBranch branch10(points_ch10, glm::vec3(0), 40, 40, 20, length);
+    branch10.update_points();
+    branch1.add_child(branch10);
+
+    // branch11
+    ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.07, 0.06, SEG, 0, 1, 8.77e9, 1.f,
+                                        1.f, 2.f);
+    std::vector<Point> points_ch11(ps_branch, ps_branch + SEG + 1);
+    delete ps_branch;
+    SimpleTreeBranch branch11(points_ch11, glm::vec3(0), 5, 0, 20, length);
+    branch11.update_points();
+    branch10.add_child(branch11);
+
+    // branch12
+    ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.06, 0.05, SEG, 0, 1, 8.77e9, 1.f,
+                                        1.f, 2.f);
+    std::vector<Point> points_ch12(ps_branch, ps_branch + SEG + 1);
+    delete ps_branch;
+    SimpleTreeBranch branch12(points_ch12, glm::vec3(0), 5, 0, 20, length);
+    branch12.update_points();
+    branch11.add_child(branch12);
+
+    // branch13
+    ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.05, 0., SEG, 0, 1, 8.77e9, 1.f,
+                                        1.f, 2.f);
+    std::vector<Point> points_ch13(ps_branch, ps_branch + SEG + 1);
+    delete ps_branch;
+    SimpleTreeBranch branch13(points_ch13, glm::vec3(0), 5, 0, 20, length);
+    branch13.update_points();
+    branch12.add_child(branch13);
+
+    // branch14
+    ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.05, 0., SEG, 0, 1, 8.77e9, 1.f,
+                                        1.f, 2.f);
+    std::vector<Point> points_ch14(ps_branch, ps_branch + SEG + 1);
+    delete ps_branch;
+    SimpleTreeBranch branch14(points_ch14, glm::vec3(0), -20, 0, 20, length);
+    branch14.update_points();
+    branch12.add_child(branch14);
+
+    //-----------------------
+
+    // branch15
+    ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.06, 0.05, SEG, 0, 1, 8.77e9, 1.f,
+                                        1.f, 2.f);
+    std::vector<Point> points_ch15(ps_branch, ps_branch + SEG + 1);
+    delete ps_branch;
+    SimpleTreeBranch branch15(points_ch15, glm::vec3(0), -20, 0, 20, length);
+    branch15.update_points();
+    branch11.add_child(branch15);
+
+    // branch16
+    ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.05, 0., SEG, 0, 1, 8.77e9, 1.f,
+                                        1.f, 2.f);
+    std::vector<Point> points_ch16(ps_branch, ps_branch + SEG + 1);
+    delete ps_branch;
+    SimpleTreeBranch branch16(points_ch16, glm::vec3(0), 10, 0, 20, length);
+    branch16.update_points();
+    branch15.add_child(branch16);
+
+    // branch17
+    ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.05, 0., SEG, 0, 1, 8.77e9, 1.f,
+                                        1.f, 2.f);
+    std::vector<Point> points_ch17(ps_branch, ps_branch + SEG + 1);
+    delete ps_branch;
+    SimpleTreeBranch branch17(points_ch17, glm::vec3(0), -20, 0, 20, length);
+    branch17.update_points();
+    branch15.add_child(branch17);
+
+    // --------------------------
+
+    // branch18
+    ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.09, 0.07, SEG, 0, 1, 8.77e9, 1.f,
+                                        1.f, 2.f);
+    std::vector<Point> points_ch18(ps_branch, ps_branch + SEG + 1);
+    delete ps_branch;
+    SimpleTreeBranch branch18(points_ch18, glm::vec3(0), 40, 130, 20, length);
+    branch18.update_points();
+    branch1.add_child(branch18);
+
+    // branch19
+    ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.07, 0.05, SEG, 0, 1, 8.77e9, 1.f,
+                                        1.f, 2.f);
+    std::vector<Point> points_ch19(ps_branch, ps_branch + SEG + 1);
+    delete ps_branch;
+    SimpleTreeBranch branch19(points_ch19, glm::vec3(0), 20, 0, 20, length);
+    branch19.update_points();
+    branch18.add_child(branch19);
+
+    // branch20
+    ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.05, 0., SEG, 0, 1, 8.77e9, 1.f,
+                                        1.f, 2.f);
+    std::vector<Point> points_ch20(ps_branch, ps_branch + SEG + 1);
+    delete ps_branch;
+    SimpleTreeBranch branch20(points_ch20, glm::vec3(0), 30, 0, 20, length);
+    branch20.update_points();
+    branch19.add_child(branch20);
+
+    // branch21
+    ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.05, 0., SEG, 0, 1, 8.77e9, 1.f,
+                                        1.f, 2.f);
+    std::vector<Point> points_ch21(ps_branch, ps_branch + SEG + 1);
+    delete ps_branch;
+    SimpleTreeBranch branch21(points_ch21, glm::vec3(0), -20, 0, 20, length);
+    branch21.update_points();
+    branch19.add_child(branch21);
+
+    // --------------------
+
+    // branch22
+    ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.07, 0.04, SEG, 0, 1, 8.77e9, 1.f,
+                                        1.f, 2.f);
+    std::vector<Point> points_ch22(ps_branch, ps_branch + SEG + 1);
+    delete ps_branch;
+    SimpleTreeBranch branch22(points_ch22, glm::vec3(0), -20, 0, 20, length);
+    branch22.update_points();
+    branch18.add_child(branch22);
+
+    // branch23
+    ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.04, 0., SEG, 0, 1, 8.77e9, 1.f,
+                                        1.f, 2.f);
+    std::vector<Point> points_ch23(ps_branch, ps_branch + SEG + 1);
+    delete ps_branch;
+    SimpleTreeBranch branch23(points_ch23, glm::vec3(0), 20, 0, 20, length);
+    branch23.update_points();
+    branch22.add_child(branch23);
+
+    // --------------------
+
+    // branch24
+    ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.09, 0.07, SEG, 0, 1, 8.77e9, 1.f,
+                                        1.f, 2.f);
+    std::vector<Point> points_ch24(ps_branch, ps_branch + SEG + 1);
+    delete ps_branch;
+    SimpleTreeBranch branch24(points_ch24, glm::vec3(0), 40, 220, 20, length);
+    branch24.update_points();
+    branch1.add_child(branch24);
+
+    // branch25
+    ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.07, 0.05, SEG, 0, 1, 8.77e9, 1.f,
+                                        1.f, 2.f);
+    std::vector<Point> points_ch25(ps_branch, ps_branch + SEG + 1);
+    delete ps_branch;
+    SimpleTreeBranch branch25(points_ch25, glm::vec3(0), -20, 0, 20, length);
+    branch25.update_points();
+    branch24.add_child(branch25);
+
+    // branch26
+    ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.05, 0., SEG, 0, 1, 8.77e9, 1.f,
+                                        1.f, 2.f);
+    std::vector<Point> points_ch26(ps_branch, ps_branch + SEG + 1);
+    delete ps_branch;
+    SimpleTreeBranch branch26(points_ch26, glm::vec3(0), -20, 0, 20, length);
+    branch26.update_points();
+    branch25.add_child(branch26);
+
+    // branch27
+    ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.05, 0., SEG, 0, 1, 8.77e9, 1.f,
+                                        1.f, 2.f);
+    std::vector<Point> points_ch27(ps_branch, ps_branch + SEG + 1);
+    delete ps_branch;
+    SimpleTreeBranch branch27(points_ch27, glm::vec3(0), 20, 0, 20, length);
+    branch27.update_points();
+    branch25.add_child(branch27);
 
 //    auto ps_branch2 = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.07, 0.05, SEG, 0, 1, 8.77e9, 1.f, 1.f,
 //                                              2.f);
@@ -296,24 +453,15 @@ int main(int argc, char *argv[]) {
 //            tree.branches[0].update_points();
             if(not stop) {
                 tree.reset();
-                q += 300 * delta_time;
-//                stop = true;
-//                stop = stop or tree.branches[0].uniform_load_pressure(q, 90);
-//                auto ps = b_ch2.points.size() - 1;
-//                auto force = b_ch2.points[ps].position - b_ch2.points[0].position;
-//                auto angle = glm::degrees(atanf(force.y / force.x)) + b_theta;
-//                stop = stop or tree.branches[0].concentrated_load_pressure(q * b_ch2.length, angle);
-//                stop = stop or b_ch2.uniform_load_pressure(q);
+                q += 600 * delta_time;
 
-                stop = b_ch21.uniform_load_pressure(q, 30) or stop;
-                stop = b_ch31.uniform_load_pressure(q) or stop;
-                stop = b_ch41.uniform_load_pressure(q, 30) or stop;
-                stop = b_ch51.uniform_load_pressure(q) or stop;
+                branch5.uniform_load_pressure(q);
 
                 stop = tree.complete_calculate() or stop;
 
                 if(stop) {
-                    std::cout << tree.branches[0].points[tree.branches[0].points.size() - 1].position.x << std::endl;
+                    std::cout << tree.branches[0].points[tree.branches[0].points.size() - 1].position.x
+                              << std::endl;
                 }
 //                stop = stop or tree2.branches[0].uniform_load_pressure(q);
 //                for(int i = 0; i <= SEG; ++i) {
@@ -357,7 +505,8 @@ int main(int argc, char *argv[]) {
         shader.set_vector3f("viewPos", camera.position);
 
         // view/projection transformations
-        glm::mat4 projection = glm::perspective(glm::radians(camera.zoom), (float) SCREEN_WIDTH / (float) SCREEN_HEIGHT,
+        glm::mat4 projection = glm::perspective(glm::radians(camera.zoom),
+                                                (float) SCREEN_WIDTH / (float) SCREEN_HEIGHT,
                                                 0.1f, 100.0f);
         glm::mat4 view = camera.get_view_matrix();
         shader.set_matrix4("projection", projection);
