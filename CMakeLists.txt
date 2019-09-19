@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.13)
 project(Tree)
 
 set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_EXE_LINKER_FLAGS -static)
 
 INCLUDE_DIRECTORIES("E:\\include\\glad\\330\\include")
 INCLUDE_DIRECTORIES("E:\\include\\glfw-3.2.1.bin.WIN32\\include")
@@ -17,7 +18,7 @@ foreach (_file ${RESOURCE_FILES})
 endforeach ()
 file(INSTALL ${RESOURCE_FILES} DESTINATION ${CMAKE_BINARY_DIR})
 
-set(SOURCE_FILES main.cpp glad.c ResourceManager.cpp Shader.cpp stb_image.cpp Texture2D.cpp Point.cpp MyTree.cpp Mesh.cpp SimpleTree.cpp SimpleTreeBranch.cpp LSystem.cpp BoundBox.cpp)
+set(SOURCE_FILES main.cpp glad.c ResourceManager.cpp Shader.cpp stb_image.cpp Texture2D.cpp Point.cpp MyTree.cpp Mesh.cpp SimpleTree.cpp SimpleTreeBranch.cpp LSystem.cpp BoundBox.cpp SnowParticle.cpp Snow.cpp)
 
 add_executable(Tree ${SOURCE_FILES})
 

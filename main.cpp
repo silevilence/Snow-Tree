@@ -9,9 +9,10 @@
 #include "Camera.h"
 
 #include "LSystem.h"
+#include "Snow.h"
 
-const GLuint SCREEN_WIDTH = 1600;
-const GLuint SCREEN_HEIGHT = 900;
+const GLuint SCREEN_WIDTH = 800;
+const GLuint SCREEN_HEIGHT = 600;
 GLuint fps_limit = 0;
 
 auto delta_time = 0.0f;
@@ -332,6 +333,7 @@ int main(int argc, char *argv[]) {
     std::vector<Point> points_ch22(ps_branch, ps_branch + SEG + 1);
     delete ps_branch;
     SimpleTreeBranch branch22(points_ch22, glm::vec3(0), -20, 0, 20, length);
+//    int a;
     branch22.update_points();
     branch18.add_child(branch22);
 
@@ -341,6 +343,7 @@ int main(int argc, char *argv[]) {
     std::vector<Point> points_ch23(ps_branch, ps_branch + SEG + 1);
     delete ps_branch;
     SimpleTreeBranch branch23(points_ch23, glm::vec3(0), 20, 0, 20, length);
+//    std::cin >> a;
     branch23.update_points();
     branch22.add_child(branch23);
 
@@ -412,10 +415,10 @@ int main(int argc, char *argv[]) {
 //    tree.branches[0].update_points();
 
 //    glm::vec3 lightPos = glm::vec3(-10, -10, -10);
-    glm::vec3 lightPos = glm::vec3(10, 10, 10);
+    glm::vec3 lightPos = glm::vec3(0, 10, 0);
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+//    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     // 变形、旋转
 //    for(auto &point:tree.branches[0].points) {
 //        auto rot = glm::rotate(glm::mat4(1), point.position.y / 20, glm::vec3(0, 0, -1));
@@ -424,13 +427,14 @@ int main(int argc, char *argv[]) {
 //    }
 //    tree.branches[0].update_points();
     bool stop = false;
-//    stop = true;
+    stop = true;
 //    float threshold = fabsf(L * cosf(glm::radians(b_theta)));
 //    if(threshold < 1e-5) {
 //        threshold = L;
 //    }
 //    std::cout << threshold << std::endl;
 //    std::cout << tree.branches[0].points[tree.branches[0].points.size() - 1].position.x << std::endl;
+    Snow snow;
     while(!glfwWindowShouldClose(window)) {
         const auto current_frame = GLfloat(glfwGetTime());
         delta_time += current_frame - last_frame;
@@ -499,10 +503,13 @@ int main(int argc, char *argv[]) {
         // Draw
         // be sure to activate shader when setting uniforms/drawing objects
         shader.use();
-        shader.set_vector3f("objectColor", 1.0f, 0.5f, 0.31f);
+//        shader.set_vector3f("objectColor", 1.0f, 0.5f, 0.31f);
+        shader.set_vector3f("objectColor", 1.f, 1.f, 1.f);
         shader.set_vector3f("lightColor", 1.0f, 1.0f, 1.0f);
         shader.set_vector3f("lightPos", lightPos);
         shader.set_vector3f("viewPos", camera.position);
+
+        snow.draw(shader);
 
         // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(camera.zoom),
@@ -518,7 +525,7 @@ int main(int argc, char *argv[]) {
 //        model = glm::rotate(model, glm::radians(45.f), glm::vec3(1, 0, 0));
 //        model = glm::scale(model, glm::vec3(0.05, 0.05, 0.05));
 //        shader.set_matrix4("model", model);
-        tree.draw(model, shader);
+//        tree.draw(model, shader);
 //        tree2.draw(model, shader);
 //        tree.draw(shader);
 
