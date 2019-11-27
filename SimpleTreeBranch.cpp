@@ -8,6 +8,7 @@
 #include <iostream>
 #include "SimpleTreeBranch.h"
 #include "MyTree.h"
+#include "BoundBox.h"
 
 float uniform_load_theta(const float &E, const float &I, const float &q, const float &L, const float &x);
 
@@ -290,6 +291,34 @@ bool SimpleTreeBranch::complete_calculate(const bool &recursive) {
 
 void SimpleTreeBranch::add_concentrated_force(const float &F, float f_theta) {
     this->force_sum += glm::vec3(sinf(f_theta), cosf(f_theta), 0) * F;
+}
+
+BoundBox *SimpleTreeBranch::create_bound_box() {
+    auto *tbox = new BoundBox();
+    tbox->branch = this;
+    Vertex *vs = this->mesh.vertices;
+
+    tbox->xmin = tbox->xmax = vs->position.x;
+    tbox->ymin = tbox->ymax = vs->position.y;
+    tbox->zmin = tbox->zmax = vs->position.z;
+
+    for(int i = 1; i < this->mesh.vertices_num; ++i) {
+        glm::vec3 &p = vs[i].position;
+        if(p.x < tbox->xmin)
+            tbox->xmin = p.x;
+        if(p.x > tbox->xmax)
+            tbox->xmax = p.x;
+        if(p.y < tbox->ymin)
+            tbox->ymin = p.y;
+        if(p.y > tbox->ymax)
+            tbox->ymax = p.y;
+        if(p.z < tbox->zmin)
+            tbox->zmin = p.z;
+        if(p.z > tbox->zmax)
+            tbox->zmax = p.z;
+    }
+
+    return tbox;
 }
 
 SimpleTreeBranch &SimpleTreeBranch::operator=(const SimpleTreeBranch &branch) = default;

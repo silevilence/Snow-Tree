@@ -11,6 +11,8 @@
 #include "Mesh.h"
 #include "Point.h"
 
+class BoundBox;
+
 class SimpleTreeBranch {
 public:
     std::vector<Point> points;
@@ -18,6 +20,9 @@ public:
 //    float rot_z;
 //    float rot_y;
     unsigned int precision{};
+
+    BoundBox *box;
+    BoundBox *tree_box;
 
     float b_theta{};
     float length{};
@@ -28,7 +33,8 @@ public:
     SimpleTreeBranch(std::vector<Point> points, const glm::vec3 &position, float rot_z, float rot_y,
                      unsigned int precision = 20, float length = 2);
 
-    SimpleTreeBranch(const Point *points, unsigned int p_num, const glm::vec3 &position, float rot_z, float rot_y,
+    SimpleTreeBranch(const Point *points, unsigned int p_num, const glm::vec3 &position, float rot_z,
+                     float rot_y,
                      unsigned int precision = 20, float length = 2);
 
     SimpleTreeBranch(std::vector<Point> points, const glm::mat4 &transform, unsigned int precision = 20,
@@ -66,8 +72,13 @@ public:
 
     void add_child(SimpleTreeBranch &branch);
 
+    BoundBox *create_bound_box();
+
+    BoundBox *create_bound_box_tree();
+
 private:
     Mesh mesh;
+
     glm::mat4 _transform;
 
     glm::vec3 force_sum;

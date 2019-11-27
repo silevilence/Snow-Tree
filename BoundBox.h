@@ -6,8 +6,17 @@
 #define TREE_BOUNDBOX_H
 
 
-class BoundBox {
+class SimpleTreeBranch;
 
+class BoundBox {
+public:
+    SimpleTreeBranch *branch;
+    float xmin;
+    float xmax;
+    float ymin;
+    float ymax;
+    float zmin;
+    float zmax;
 };
 
 

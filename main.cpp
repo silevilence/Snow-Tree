@@ -3,6 +3,8 @@
 #include <iostream>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <random>
+#include <time.h>
 
 #include "ResourceManager.h"
 #include "MyTree.h"
@@ -122,6 +124,8 @@ int main(int argc, char *argv[]) {
     const int SEG = 25;
     const float length = 1;
 
+    std::vector<SimpleTreeBranch *> branches_vec;
+
     // root branch
     auto ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.1, 0.09, SEG, 0, 1, 8.77e9,
                                              1.f, 1.f, 2.f);
@@ -145,6 +149,7 @@ int main(int argc, char *argv[]) {
     SimpleTreeBranch branch2(points_ch2, glm::vec3(0), 40, 0, 20, length);
     branch2.update_points();
     branch1.add_child(branch2);
+    branches_vec.push_back(&branch2);
 
     // branch3
     ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.07, 0.05, SEG, 0, 1, 8.77e9, 1.f,
@@ -154,6 +159,7 @@ int main(int argc, char *argv[]) {
     SimpleTreeBranch branch3(points_ch3, glm::vec3(0), 20, 0, 20, length);
     branch3.update_points();
     branch2.add_child(branch3);
+    branches_vec.push_back(&branch3);
 
     // branch4
     ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.05, 0.04, SEG, 0, 1, 8.77e9, 1.f,
@@ -163,6 +169,7 @@ int main(int argc, char *argv[]) {
     SimpleTreeBranch branch4(points_ch4, glm::vec3(0), 10, 0, 20, length);
     branch4.update_points();
     branch3.add_child(branch4);
+    branches_vec.push_back(&branch4);
 
     // branch5
     ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.04, 0., SEG, 0, 1, 8.77e9, 1.f,
@@ -172,6 +179,7 @@ int main(int argc, char *argv[]) {
     SimpleTreeBranch branch5(points_ch5, glm::vec3(0), 20, 0, 20, length);
     branch5.update_points();
     branch4.add_child(branch5);
+    branches_vec.push_back(&branch5);
 
     //--------------------------------------
 
@@ -183,6 +191,7 @@ int main(int argc, char *argv[]) {
     SimpleTreeBranch branch6(points_ch6, glm::vec3(0), -10, 0, 20, length);
     branch6.update_points();
     branch4.add_child(branch6);
+    branches_vec.push_back(&branch6);
 
     // branch7
     ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.07, 0.05, SEG, 0, 1, 8.77e9, 1.f,
@@ -192,6 +201,7 @@ int main(int argc, char *argv[]) {
     SimpleTreeBranch branch7(points_ch7, glm::vec3(0), -10, 0, 20, length);
     branch7.update_points();
     branch2.add_child(branch7);
+    branches_vec.push_back(&branch7);
 
     // branch8
     ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.05, 0., SEG, 0, 1, 8.77e9, 1.f,
@@ -201,6 +211,7 @@ int main(int argc, char *argv[]) {
     SimpleTreeBranch branch8(points_ch8, glm::vec3(0), 10, 0, 20, length);
     branch8.update_points();
     branch7.add_child(branch8);
+    branches_vec.push_back(&branch8);
 
     // branch9
     ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.05, 0., SEG, 0, 1, 8.77e9, 1.f,
@@ -210,6 +221,7 @@ int main(int argc, char *argv[]) {
     SimpleTreeBranch branch9(points_ch9, glm::vec3(0), -20, 0, 20, length);
     branch9.update_points();
     branch7.add_child(branch9);
+    branches_vec.push_back(&branch9);
 
     //------------------------------------
 
@@ -221,6 +233,7 @@ int main(int argc, char *argv[]) {
     SimpleTreeBranch branch10(points_ch10, glm::vec3(0), 40, 40, 20, length);
     branch10.update_points();
     branch1.add_child(branch10);
+    branches_vec.push_back(&branch10);
 
     // branch11
     ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.07, 0.06, SEG, 0, 1, 8.77e9, 1.f,
@@ -230,6 +243,7 @@ int main(int argc, char *argv[]) {
     SimpleTreeBranch branch11(points_ch11, glm::vec3(0), 5, 0, 20, length);
     branch11.update_points();
     branch10.add_child(branch11);
+    branches_vec.push_back(&branch11);
 
     // branch12
     ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.06, 0.05, SEG, 0, 1, 8.77e9, 1.f,
@@ -239,6 +253,7 @@ int main(int argc, char *argv[]) {
     SimpleTreeBranch branch12(points_ch12, glm::vec3(0), 5, 0, 20, length);
     branch12.update_points();
     branch11.add_child(branch12);
+    branches_vec.push_back(&branch12);
 
     // branch13
     ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.05, 0., SEG, 0, 1, 8.77e9, 1.f,
@@ -248,6 +263,7 @@ int main(int argc, char *argv[]) {
     SimpleTreeBranch branch13(points_ch13, glm::vec3(0), 5, 0, 20, length);
     branch13.update_points();
     branch12.add_child(branch13);
+    branches_vec.push_back(&branch13);
 
     // branch14
     ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.05, 0., SEG, 0, 1, 8.77e9, 1.f,
@@ -257,6 +273,7 @@ int main(int argc, char *argv[]) {
     SimpleTreeBranch branch14(points_ch14, glm::vec3(0), -20, 0, 20, length);
     branch14.update_points();
     branch12.add_child(branch14);
+    branches_vec.push_back(&branch14);
 
     //-----------------------
 
@@ -268,6 +285,7 @@ int main(int argc, char *argv[]) {
     SimpleTreeBranch branch15(points_ch15, glm::vec3(0), -20, 0, 20, length);
     branch15.update_points();
     branch11.add_child(branch15);
+    branches_vec.push_back(&branch15);
 
     // branch16
     ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.05, 0., SEG, 0, 1, 8.77e9, 1.f,
@@ -277,6 +295,7 @@ int main(int argc, char *argv[]) {
     SimpleTreeBranch branch16(points_ch16, glm::vec3(0), 10, 0, 20, length);
     branch16.update_points();
     branch15.add_child(branch16);
+    branches_vec.push_back(&branch16);
 
     // branch17
     ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.05, 0., SEG, 0, 1, 8.77e9, 1.f,
@@ -286,6 +305,7 @@ int main(int argc, char *argv[]) {
     SimpleTreeBranch branch17(points_ch17, glm::vec3(0), -20, 0, 20, length);
     branch17.update_points();
     branch15.add_child(branch17);
+    branches_vec.push_back(&branch17);
 
     // --------------------------
 
@@ -297,6 +317,7 @@ int main(int argc, char *argv[]) {
     SimpleTreeBranch branch18(points_ch18, glm::vec3(0), 40, 130, 20, length);
     branch18.update_points();
     branch1.add_child(branch18);
+    branches_vec.push_back(&branch18);
 
     // branch19
     ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.07, 0.05, SEG, 0, 1, 8.77e9, 1.f,
@@ -306,6 +327,7 @@ int main(int argc, char *argv[]) {
     SimpleTreeBranch branch19(points_ch19, glm::vec3(0), 20, 0, 20, length);
     branch19.update_points();
     branch18.add_child(branch19);
+    branches_vec.push_back(&branch19);
 
     // branch20
     ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.05, 0., SEG, 0, 1, 8.77e9, 1.f,
@@ -315,6 +337,7 @@ int main(int argc, char *argv[]) {
     SimpleTreeBranch branch20(points_ch20, glm::vec3(0), 30, 0, 20, length);
     branch20.update_points();
     branch19.add_child(branch20);
+    branches_vec.push_back(&branch20);
 
     // branch21
     ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.05, 0., SEG, 0, 1, 8.77e9, 1.f,
@@ -324,6 +347,7 @@ int main(int argc, char *argv[]) {
     SimpleTreeBranch branch21(points_ch21, glm::vec3(0), -20, 0, 20, length);
     branch21.update_points();
     branch19.add_child(branch21);
+    branches_vec.push_back(&branch21);
 
     // --------------------
 
@@ -336,6 +360,7 @@ int main(int argc, char *argv[]) {
 //    int a;
     branch22.update_points();
     branch18.add_child(branch22);
+    branches_vec.push_back(&branch22);
 
     // branch23
     ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.04, 0., SEG, 0, 1, 8.77e9, 1.f,
@@ -346,6 +371,7 @@ int main(int argc, char *argv[]) {
 //    std::cin >> a;
     branch23.update_points();
     branch22.add_child(branch23);
+    branches_vec.push_back(&branch23);
 
     // --------------------
 
@@ -357,6 +383,7 @@ int main(int argc, char *argv[]) {
     SimpleTreeBranch branch24(points_ch24, glm::vec3(0), 40, 220, 20, length);
     branch24.update_points();
     branch1.add_child(branch24);
+    branches_vec.push_back(&branch24);
 
     // branch25
     ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.07, 0.05, SEG, 0, 1, 8.77e9, 1.f,
@@ -366,6 +393,7 @@ int main(int argc, char *argv[]) {
     SimpleTreeBranch branch25(points_ch25, glm::vec3(0), -20, 0, 20, length);
     branch25.update_points();
     branch24.add_child(branch25);
+    branches_vec.push_back(&branch25);
 
     // branch26
     ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.05, 0., SEG, 0, 1, 8.77e9, 1.f,
@@ -375,6 +403,7 @@ int main(int argc, char *argv[]) {
     SimpleTreeBranch branch26(points_ch26, glm::vec3(0), -20, 0, 20, length);
     branch26.update_points();
     branch25.add_child(branch26);
+    branches_vec.push_back(&branch26);
 
     // branch27
     ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.05, 0., SEG, 0, 1, 8.77e9, 1.f,
@@ -384,6 +413,25 @@ int main(int argc, char *argv[]) {
     SimpleTreeBranch branch27(points_ch27, glm::vec3(0), 20, 0, 20, length);
     branch27.update_points();
     branch25.add_child(branch27);
+    branches_vec.push_back(&branch27);
+
+    std::default_random_engine e(time(nullptr));
+    std::uniform_int_distribution<int> rand(0, branches_vec.size() - 1);
+    int index[5];
+    for(int i = 0; i < 5; i++) {
+        bool repeat;
+        do {
+            repeat = false;
+            index[i] = rand(e);
+            for(int j = 0; j < i; j++) {
+                if(index[j] == index[i]) {
+                    repeat = true;
+                    break;
+                }
+            }
+        } while(repeat);
+        std::cout << index[i] << std::endl;
+    }
 
 //    auto ps_branch2 = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.07, 0.05, SEG, 0, 1, 8.77e9, 1.f, 1.f,
 //                                              2.f);
@@ -418,7 +466,7 @@ int main(int argc, char *argv[]) {
     glm::vec3 lightPos = glm::vec3(0, 10, 0);
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-//    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     // 变形、旋转
 //    for(auto &point:tree.branches[0].points) {
 //        auto rot = glm::rotate(glm::mat4(1), point.position.y / 20, glm::vec3(0, 0, -1));
@@ -427,14 +475,14 @@ int main(int argc, char *argv[]) {
 //    }
 //    tree.branches[0].update_points();
     bool stop = false;
-    stop = true;
+//    stop = true;
 //    float threshold = fabsf(L * cosf(glm::radians(b_theta)));
 //    if(threshold < 1e-5) {
 //        threshold = L;
 //    }
 //    std::cout << threshold << std::endl;
 //    std::cout << tree.branches[0].points[tree.branches[0].points.size() - 1].position.x << std::endl;
-    Snow snow;
+//    Snow snow;
     while(!glfwWindowShouldClose(window)) {
         const auto current_frame = GLfloat(glfwGetTime());
         delta_time += current_frame - last_frame;
@@ -459,7 +507,10 @@ int main(int argc, char *argv[]) {
                 tree.reset();
                 q += 600 * delta_time;
 
-                branch5.uniform_load_pressure(q);
+//                branch5.uniform_load_pressure(q);
+                for(int i = 0; i < 5; i++) {
+                    branches_vec[i]->uniform_load_pressure(q / (i + 1));
+                }
 
                 stop = tree.complete_calculate() or stop;
 
@@ -503,13 +554,13 @@ int main(int argc, char *argv[]) {
         // Draw
         // be sure to activate shader when setting uniforms/drawing objects
         shader.use();
-//        shader.set_vector3f("objectColor", 1.0f, 0.5f, 0.31f);
-        shader.set_vector3f("objectColor", 1.f, 1.f, 1.f);
+        shader.set_vector3f("objectColor", 1.0f, 0.5f, 0.31f);
+//        shader.set_vector3f("objectColor", 1.f, 1.f, 1.f);
         shader.set_vector3f("lightColor", 1.0f, 1.0f, 1.0f);
         shader.set_vector3f("lightPos", lightPos);
         shader.set_vector3f("viewPos", camera.position);
 
-        snow.draw(shader);
+//        snow.draw(shader);
 
         // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(camera.zoom),
@@ -525,7 +576,7 @@ int main(int argc, char *argv[]) {
 //        model = glm::rotate(model, glm::radians(45.f), glm::vec3(1, 0, 0));
 //        model = glm::scale(model, glm::vec3(0.05, 0.05, 0.05));
 //        shader.set_matrix4("model", model);
-//        tree.draw(model, shader);
+        tree.draw(model, shader);
 //        tree2.draw(model, shader);
 //        tree.draw(shader);
 
