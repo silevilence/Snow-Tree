@@ -21,9 +21,8 @@ float concentrated_load_omega(const float &E, const float &I, const float &F, co
 const float RADIUS_THRESHOLD = 0.1f;
 
 SimpleTreeBranch::SimpleTreeBranch(std::vector<Point> points, const glm::vec3 &position, float rot_z,
-                                   float rot_y, unsigned int precision, float length) : points(
-        std::move(points)),
-                                                                                        precision(precision) {
+                                   float rot_y, unsigned int precision, float length)
+        : points(std::move(points)), precision(precision), rot_y(rot_y), rot_z(rot_z) {
     _transform = glm::translate(glm::mat4(1), position);
     _transform = glm::rotate(_transform, glm::radians(rot_y), glm::vec3(0, 1, 0));
     _transform = glm::rotate(_transform, glm::radians(rot_z), glm::vec3(0, 0, -1));
@@ -59,8 +58,8 @@ inline void SimpleTreeBranch::_copy(const SimpleTreeBranch &branch) {
     points = branch.points;
     mesh = branch.mesh;
 //    position = branch.position;
-//    rot_z = branch.rot_z;
-//    rot_y = branch.rot_y;
+    rot_z = branch.rot_z;
+    rot_y = branch.rot_y;
     precision = branch.precision;
     _transform = branch._transform;
     b_theta = branch.b_theta;
@@ -74,8 +73,8 @@ inline void SimpleTreeBranch::_move(SimpleTreeBranch &branch) {
     points = std::move(branch.points);
     mesh = std::move(branch.mesh);
 //    position = branch.position;
-//    rot_z = branch.rot_z;
-//    rot_y = branch.rot_y;
+    rot_z = branch.rot_z;
+    rot_y = branch.rot_y;
     precision = branch.precision;
     _transform = branch._transform;
     b_theta = branch.b_theta;
@@ -92,7 +91,7 @@ SimpleTreeBranch::SimpleTreeBranch(const Point *const points, unsigned int p_num
 //    this->generate_mesh();
 }
 
-void SimpleTreeBranch::draw(const glm::mat4 &transform, Shader shader) {
+void SimpleTreeBranch::draw(const glm::mat4 &transform, Shader shader) const {
     shader.use();
 
 //    glm::mat4 model = glm::translate(transform, position);
@@ -117,14 +116,9 @@ void SimpleTreeBranch::draw(const glm::mat4 &transform, Shader shader) {
 }
 
 SimpleTreeBranch::SimpleTreeBranch(std::vector<Point> points, const glm::mat4 &transform,
-                                   unsigned int precision, float b_theta, float length) : points(
-        std::move(points)),
-                                                                                          _transform(
-                                                                                                  transform),
-                                                                                          precision(
-                                                                                                  precision),
-                                                                                          b_theta(b_theta),
-                                                                                          length(length) {
+                                   unsigned int precision, float b_theta, float length)
+        : points(std::move(points)), _transform(transform), precision(precision), b_theta(b_theta),
+          length(length) {
     this->generate_mesh();
 }
 

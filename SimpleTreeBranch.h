@@ -13,12 +13,14 @@
 
 class BoundBox;
 
+class SPlane;
+
 class SimpleTreeBranch {
 public:
     std::vector<Point> points;
 //    glm::vec3 position;
-//    float rot_z;
-//    float rot_y;
+    float rot_z;
+    float rot_y;
     unsigned int precision{};
 
     BoundBox *box;
@@ -54,7 +56,7 @@ public:
 
     void generate_mesh(const bool &cal_normal = true);
 
-    void draw(const glm::mat4 &transform, Shader shader);
+    void draw(const glm::mat4 &transform, Shader shader) const;
 
     void update_points();
 
@@ -76,9 +78,8 @@ public:
 
     BoundBox *create_bound_box_tree();
 
-private:
     Mesh mesh;
-
+private:
     glm::mat4 _transform;
 
     glm::vec3 force_sum;
@@ -88,6 +89,8 @@ private:
     void _copy(const SimpleTreeBranch &branch);
 
     void _move(SimpleTreeBranch &branch);
+
+    friend SPlane;
 };
 
 

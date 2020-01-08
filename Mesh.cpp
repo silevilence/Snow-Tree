@@ -58,7 +58,7 @@ void Mesh::_clear_buffer() {
     is_set = false;
 }
 
-void Mesh::draw(Shader shader) {
+void Mesh::draw(Shader shader) const {
     shader.use();
 //    unsigned int diffuseNr = 1;
 //    unsigned int specularNr = 1;

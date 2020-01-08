@@ -12,6 +12,7 @@
 
 #include "LSystem.h"
 #include "Snow.h"
+#include "SPlane.h"
 
 const GLuint SCREEN_WIDTH = 800;
 const GLuint SCREEN_HEIGHT = 600;
@@ -23,6 +24,8 @@ float last_x, last_y;
 const float sensitivity = 0.3f;
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f)); // NOLINT(cert-err58-cpp)
+
+SPlane *snow_plane;
 
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
 
@@ -55,6 +58,7 @@ int main(int argc, char *argv[]) {
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     // 不知道为什么要声明顺时针才能让逆时针的点正常渲染
     glFrontFace(GL_CW);
+//    glFrontFace(GL_CCW);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 
@@ -433,6 +437,9 @@ int main(int argc, char *argv[]) {
         std::cout << index[i] << std::endl;
     }
 
+//    branch1.rot_z = 1;
+    snow_plane = new SPlane(branch5, 60.F);
+
 //    auto ps_branch2 = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.07, 0.05, SEG, 0, 1, 8.77e9, 1.f, 1.f,
 //                                              2.f);
 ////    auto branch = MyTree::Create_Cylinders(ps_branch, SEG + 1, 20);
@@ -463,10 +470,10 @@ int main(int argc, char *argv[]) {
 //    tree.branches[0].update_points();
 
 //    glm::vec3 lightPos = glm::vec3(-10, -10, -10);
-    glm::vec3 lightPos = glm::vec3(0, 10, 0);
+    glm::vec3 lightPos = glm::vec3(0, 3, -2);
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+//    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     // 变形、旋转
 //    for(auto &point:tree.branches[0].points) {
 //        auto rot = glm::rotate(glm::mat4(1), point.position.y / 20, glm::vec3(0, 0, -1));
@@ -475,7 +482,7 @@ int main(int argc, char *argv[]) {
 //    }
 //    tree.branches[0].update_points();
     bool stop = false;
-//    stop = true;
+    stop = true;
 //    float threshold = fabsf(L * cosf(glm::radians(b_theta)));
 //    if(threshold < 1e-5) {
 //        threshold = L;
@@ -554,8 +561,8 @@ int main(int argc, char *argv[]) {
         // Draw
         // be sure to activate shader when setting uniforms/drawing objects
         shader.use();
-        shader.set_vector3f("objectColor", 1.0f, 0.5f, 0.31f);
-//        shader.set_vector3f("objectColor", 1.f, 1.f, 1.f);
+//        shader.set_vector3f("objectColor", 1.0f, 0.5f, 0.31f);
+        shader.set_vector3f("objectColor", 1.f, 1.f, 1.f);
         shader.set_vector3f("lightColor", 1.0f, 1.0f, 1.0f);
         shader.set_vector3f("lightPos", lightPos);
         shader.set_vector3f("viewPos", camera.position);
@@ -572,11 +579,15 @@ int main(int argc, char *argv[]) {
 
         // world transformation
         glm::mat4 model = glm::mat4(1.0f);
-//        model = glm::translate(model, glm::vec3(0, -0.5f, 0));
-//        model = glm::rotate(model, glm::radians(45.f), glm::vec3(1, 0, 0));
+        model = glm::translate(model, glm::vec3(-0.5f, -0.5f, -0.5f));
+//        model = glm::rotate(model, glm::radians(-90.f), glm::vec3(0, 0, 1));
 //        model = glm::scale(model, glm::vec3(0.05, 0.05, 0.05));
 //        shader.set_matrix4("model", model);
-        tree.draw(model, shader);
+//        tree.draw(model, shader);
+        snow_plane->draw(model, shader);
+        shader.set_vector3f("objectColor", 1.0f, 0.5f, 0.31f);
+        snow_plane->branch->draw(model, shader);
+
 //        tree2.draw(model, shader);
 //        tree.draw(shader);
 
@@ -618,6 +629,15 @@ void key_callback(GLFWwindow *window, int key, int scancode, const int action, i
             break;
         case GLFW_KEY_D:
             camera.process_keyboard(camera_movement::RIGHT, delta_time);
+            break;
+        case GLFW_KEY_1:
+            snow_plane->change_mode(1);
+            break;
+        case GLFW_KEY_2:
+            snow_plane->change_mode(2);
+            break;
+        case GLFW_KEY_3:
+            snow_plane->change_mode(3);
             break;
         default:
             break;

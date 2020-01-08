@@ -32,7 +32,7 @@ public:
 
     void update_vertices_data(const bool &recalculate_normal = true);
 
-    void draw(Shader shader);
+    void draw(Shader shader) const;
 
 private:
     GLuint VAO, VBO, EBO;
