@@ -438,7 +438,15 @@ int main(int argc, char *argv[]) {
     }
 
 //    branch1.rot_z = 1;
-    snow_plane = new SPlane(branch5, 60.F);
+    ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.05, 0.,
+                                        SEG + 10, 0, 1, 8.77e9, 1.f,
+                                        1.f, 2.f);
+    std::vector<Point> points_ch_snow(ps_branch, ps_branch + SEG + 10 + 1);
+    delete ps_branch;
+    SimpleTreeBranch branch_snow(points_ch_snow, glm::vec3(0), -70, 0, 30, length);
+    branch_snow.update_points();
+    snow_plane = new SPlane(branch_snow, 45.F);
+//    snow_plane = new SPlane();
 
 //    auto ps_branch2 = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.07, 0.05, SEG, 0, 1, 8.77e9, 1.f, 1.f,
 //                                              2.f);
@@ -586,7 +594,8 @@ int main(int argc, char *argv[]) {
 //        tree.draw(model, shader);
         snow_plane->draw(model, shader);
         shader.set_vector3f("objectColor", 1.0f, 0.5f, 0.31f);
-        snow_plane->branch->draw(model, shader);
+        if(snow_plane->branch != nullptr)
+            snow_plane->branch->draw(model, shader);
 
 //        tree2.draw(model, shader);
 //        tree.draw(shader);

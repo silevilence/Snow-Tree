@@ -9,6 +9,7 @@
 
 #include <random>
 #include <ctime>
+#include <iostream>
 
 //const int PRECISION = 100;
 const float PLANE_SIZE = 1;
@@ -21,6 +22,14 @@ const float PLANE_SIZE = 1;
  * @return
  */
 std::vector<Vertex> point_lerp(const Vertex &vertex1, const Vertex &vertex2, const int &num);
+
+/**
+ * 返回缩放因子
+ * @param x [0,1]
+ * @param y [0,1]
+ * @return E^(-\[Pi] ((-1+2 x)^2+(-1+2 y)^2))
+ */
+inline float magnification(const float &x, const float &y);
 
 SPlane::SPlane()
         : mode(1) {
@@ -42,12 +51,14 @@ void SPlane::generate_points() {
             float x = j * PLANE_SIZE / PRECISION;
             float y = 0;
             float z = i * PLANE_SIZE / PRECISION;
-            if(not(i == 0 or i == PRECISION - 1 or j == 0 or j == PRECISION - 1)) {
-//                y = u(e);
-//                y = 0.1 * j * PLANE_SIZE / PRECISION + 0.005 - u(e);
-//                y = (float) perlin->perlin(x * 2, y * 2, z * 2);
-                y = (float) perlin->OctavePerlin(x * 2, y, z * 2, 5, 2) * .1F;
-            }
+            y = (float) perlin->OctavePerlin(x * 2, y, z * 2, 5, 2) * .2F
+                * magnification((float) i / PRECISION, (float) j / PRECISION);
+//            if(not(i == 0 or i == PRECISION - 1 or j == 0 or j == PRECISION - 1)) {
+////                y = u(e);
+////                y = 0.1 * j * PLANE_SIZE / PRECISION + 0.005 - u(e);
+////                y = (float) perlin->perlin(x * 2, y * 2, z * 2);
+//                y = (float) perlin->OctavePerlin(x * 2, y, z * 2, 5, 2) * .1F;
+//            }
 
             Vertex p;
             p.position = glm::vec3(x, y, z);
@@ -222,7 +233,8 @@ SPlane::SPlane(const SimpleTreeBranch &branch, const float &accumulate_angle)
 
     auto *perlin = new Perlin;
     // 旋转角计算
-    rot_angle = rot_z > 0 ? 90 - rot_z : -(90 + rot_z);
+//    rot_angle = rot_z > 0 ? 90 - rot_z : -(90 + rot_z);
+    rot_angle = rot_z > 0 ? 90 : -90;
     glm::mat4 rot = glm::rotate(glm::mat4(1), glm::radians(rot_angle), glm::vec3(0, 0, -1));
     // 点
     // X--*--*--*
@@ -241,7 +253,7 @@ SPlane::SPlane(const SimpleTreeBranch &branch, const float &accumulate_angle)
             v.position = glm::vec3(pos4.x, pos4.y + 0.001F, pos4.z);
 
             // 插值
-            if(j != 0) {
+            if(j != 0 and prec != PRECISION) {
                 auto lerped_vertices = point_lerp(this->vertices.back(), v, 10);
                 this->vertices.insert(this->vertices.end(), lerped_vertices.begin(), lerped_vertices.end());
             }
@@ -251,12 +263,70 @@ SPlane::SPlane(const SimpleTreeBranch &branch, const float &accumulate_angle)
     }
 
     // perlin
-    for(int i = PRECISION; i < this->vertices.size() - PRECISION; ++i) {
-        if(i % PRECISION == 0 or (i + 1) % PRECISION == 0) {
-            continue;
-        }
+    // 当为边缘点时形成边缘随机，当为中间点时作为高度
+//    for(int i = PRECISION; i < this->vertices.size() - PRECISION; ++i) {
+    for(int i = 0; i < this->vertices.size(); ++i) {
         auto &pos = this->vertices[i].position;
-        pos.y += perlin->OctavePerlin(pos.x, pos.y, pos.z, 5, 2) * 0.05F;
+        auto distance = perlin->OctavePerlin(fabsf(pos.x), fabsf(pos.y), fabsf(pos.z), 5, 2);
+//        std::cout<<distance<<std::endl;
+
+        auto trans = glm::mat4(1);
+        glm::vec3 prev;
+
+        auto roted = rot * glm::vec4(branch.points[i / PRECISION].position, 1);
+        prev = glm::vec3(roted.x, roted.y, roted.z);
+
+        trans = glm::translate(trans,
+                               glm::normalize(pos - prev) *
+                               (float) (distance * .07F *
+                                        magnification(float(i / PRECISION) / branch.points.size(),
+                                                      float(i % PRECISION) / PRECISION)));
+
+        /*
+         * ***
+         * ***
+         * X**
+         */
+        if(i % PRECISION == 0) {
+            prev = this->vertices[i + 1].position;
+        }
+            /*
+             * ***
+             * ***
+             * **X
+             */
+        else if((i + 1) % PRECISION == 0) {
+            prev = this->vertices[i - 1].position;
+        }
+            /*
+             * ***    *X*
+             * *** or ***
+             * *X*    ***
+             */
+            // 不需要
+//        else if(i / PRECISION == 0 or i / PRECISION == branch.points.size() - 1) {
+//            continue;
+//        }
+            /*
+             * ***
+             * *X*
+             * ***
+             */
+        else {
+            prev = glm::vec3(0);
+        }
+
+        if(prev != glm::vec3(0)) {
+            trans = glm::translate(trans, glm::normalize(pos - prev) *
+                                          (float) (distance * .03F *
+                                                   magnification(float(i / PRECISION) / branch.points.size(),
+                                                                 0.5F)));
+        }
+
+        auto moved_pos = trans * glm::vec4(pos, 1);
+        pos.x = moved_pos.x;
+        pos.y = moved_pos.y;
+        pos.z = moved_pos.z;
     }
 
     // index
@@ -289,4 +359,24 @@ std::vector<Vertex> point_lerp(const Vertex &vertex1, const Vertex &vertex2, con
     }
 
     return result;
+}
+
+float magnification(const float &x, const float &y) {
+    // E^(-\[Pi] ((-1+2 x)^2+(-1+2 y)^2))
+//    const static float ep = 0.0432139F; // e^(-pi)
+//    float xx = x + x - 1; // 2x-1
+//    float yy = y + y - 1; // 2y-1
+//
+//    return powf(ep, xx * xx + yy * yy);
+
+    // 1/4 (1+Cos[\[Pi] (-1+2 x)]) (1+Cos[\[Pi] (-1+2 y)]) = Sin[\[Pi] x]^2 Sin[\[Pi] y]^2
+    const static float pi = 3.141592654F; // pi
+    float spx = sinf(pi * x);
+    float spy = sinf(pi * y);
+    return spx * spx * spy * spy;
+
+    // Sqrt[(1-(-1+2 x)^2) (1-(-1+2 y)^2)]
+//    float xx = x + x - 1; // 2x-1
+//    float yy = y + y - 1; // 2y-1
+//    return sqrtf((1 - xx * xx) * (1 - yy * yy));
 }

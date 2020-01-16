@@ -1,6 +1,7 @@
 //
 // Created by lenovo on 2019/12/7.
 //
+#include <iostream>
 
 #include "Perlin.h"
 
@@ -190,6 +191,9 @@ double Perlin::OctavePerlin(double x, double y, double z, int octaves, double pe
     double maxValue = 0;            // Used for normalizing result to 0.0 - 1.0
     for(int i = 0; i < octaves; i++) {
         total += perlin(x * frequency, y * frequency, z * frequency) * amplitude;
+//        auto t = perlin(x * frequency, y * frequency, z * frequency) * amplitude;
+//        if(t < 0)
+//            std::cout << x << y << z << t << std::endl;
 
         maxValue += amplitude;
 
