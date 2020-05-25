@@ -79,6 +79,8 @@ public:
     BoundBox *create_bound_box_tree();
 
     Mesh mesh;
+
+    glm::mat4 *last_transform = new glm::mat4(1);
 private:
     glm::mat4 _transform;
 

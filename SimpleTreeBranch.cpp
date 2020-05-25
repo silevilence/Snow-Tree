@@ -98,7 +98,8 @@ void SimpleTreeBranch::draw(const glm::mat4 &transform, Shader shader) const {
 //    model = glm::rotate(model, glm::radians(rot_y), glm::vec3(0, 1, 0));
 //    model = glm::rotate(model, glm::radians(rot_z), glm::vec3(0, 0, -1));
 
-    shader.set_matrix4("model", transform * _transform);
+    *last_transform = transform * _transform;
+    shader.set_matrix4("model", *last_transform);
     this->mesh.draw(shader);
 
     // draw children

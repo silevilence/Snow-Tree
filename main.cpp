@@ -13,6 +13,7 @@
 #include "LSystem.h"
 #include "Snow.h"
 #include "SPlane.h"
+#include "ParticleGenerator.h"
 
 const GLuint SCREEN_WIDTH = 800;
 const GLuint SCREEN_HEIGHT = 600;
@@ -26,6 +27,12 @@ const float sensitivity = 0.3f;
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f)); // NOLINT(cert-err58-cpp)
 
 SPlane *snow_plane;
+
+glm::vec3 force = glm::vec3(0.0f);
+const float FORCE_CLEAR_INTERVAL = 0.2f;
+double last_change_time;
+
+particle_generator *pg;
 
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
 
@@ -102,9 +109,9 @@ int main(int argc, char *argv[]) {
 
 //    int seg_num = 10;
 //    auto points = MyTree::generate_branch(2, glm::vec3(0, 0, -1), 1, 0.5, 0, seg_num, 1, 2);
-//    Mesh &&tree = MyTree::Create_Cylinders(points, seg_num + 1, 50);
+//    Mesh &&treee = MyTree::Create_Cylinders(points, seg_num + 1, 50);
 //
-//    tree.setup_mesh(true);
+//    treee.setup_mesh(true);
 //    delete points;
 //
 //    const int branch_num = 5;
@@ -115,7 +122,7 @@ int main(int argc, char *argv[]) {
 //
 //        branch.setup_mesh(true);
 //    }
-////    Mesh &&branch = MyTree::Create_Cylinders(ps_branch, seg_num + 1, 20);
+//    Mesh &&branch = MyTree::Create_Cylinders(ps_branch, seg_num + 1, 20);
 //
 ////    branch.setup_mesh();
 //
@@ -123,7 +130,7 @@ int main(int argc, char *argv[]) {
 
 //    auto tree_str = LSystem::param_iterator("A(0)", 5);
 //    std::cout << tree_str << std::endl;
-//    auto tree = LSystem::param_l_interpret(tree_str);
+//    auto l_tree = LSystem::param_l_interpret(tree_str);
 
     const int SEG = 25;
     const float length = 1;
@@ -421,21 +428,65 @@ int main(int argc, char *argv[]) {
 
     std::default_random_engine e(time(nullptr));
     std::uniform_int_distribution<int> rand(0, branches_vec.size() - 1);
-    int index[5];
-    for(int i = 0; i < 5; i++) {
-        bool repeat;
-        do {
-            repeat = false;
-            index[i] = rand(e);
-            for(int j = 0; j < i; j++) {
-                if(index[j] == index[i]) {
-                    repeat = true;
-                    break;
-                }
-            }
-        } while(repeat);
-        std::cout << index[i] << std::endl;
+    int snows = 5;
+//    int index[5];
+//    SPlane planes[5];
+//    // 20, 22, 1, 17, 9
+//    // 21, 19, 7, 2, 11
+//    for(int i = 0; i < snows; i++) {
+//        bool repeat;
+//        do {
+//            repeat = false;
+//            index[i] = rand(e);
+//            for(int j = 0; j < i; j++) {
+//                if(index[j] == index[i]) {
+//                    repeat = true;
+//                    break;
+//                }
+//            }
+//        } while(repeat);
+//        std::cout << index[i] << std::endl;
+//        new(&planes[i]) SPlane(*branches_vec[index[i]], 45.F, 0.1);
+//    }
+
+//    int index[] = {22, 1, 17, 9, 2};
+//    int index[] = {21, 18, 6, 2, 11};
+    int index[] = {21, 18, 6, 2, 11, 22, 1, 17, 9};
+    snows = 9;
+    SPlane planes[9];
+    for(int i = 0; i < snows; ++i) {
+        new(&planes[i]) SPlane(*branches_vec[index[i]], 45.F, 0.1 / (i /*% 4*/ + 1));
     }
+
+//    ps_branch = MyTree::generate_branch(length/2, glm::vec3(0, 0, 1), 0, 0.03, 0.02, SEG, 0, 1, 8.77e9, 1.f,
+//                                        1.f, 2.f);
+//    std::vector<Point> points_ch_test(ps_branch, ps_branch + SEG + 1);
+//    delete ps_branch;
+//    SimpleTreeBranch branch_test(points_ch_test, glm::vec3(0), 90, 0, 20, length/2);
+//    branch_test.update_points();
+//
+//    ps_branch = MyTree::generate_branch(length/2, glm::vec3(0, 0, 1), 0, 0.02, 0.01, SEG, 0, 1, 8.77e9, .5f,
+//                                        .5f, 2.f);
+//    std::vector<Point> points_ch_test_ch(ps_branch, ps_branch + SEG + 1);
+//    delete ps_branch;
+//    SimpleTreeBranch branch_test_ch(points_ch_test_ch, glm::vec3(0), 0, 0, 20, length/2);
+//    branch_test_ch.update_points();
+//    branch_test.add_child(branch_test_ch);
+//
+//    ps_branch = MyTree::generate_branch(length/2, glm::vec3(0, 0, 1), 0, 0.03, 0.02, SEG, 0, 1, 8.77e9, .5f,
+//                                        .5f, 2.f);
+//    std::vector<Point> points_ch_test2(ps_branch, ps_branch + SEG + 1);
+//    delete ps_branch;
+//    SimpleTreeBranch branch_test2(points_ch_test2, glm::vec3(0), 90, 0, 20, length/2);
+//    branch_test2.update_points();
+//
+//    ps_branch = MyTree::generate_branch(length/2, glm::vec3(0, 0, 1), 0, 0.02, 0.01, SEG, 0, 1, 8.77e9, .5f,
+//                                        .5f, 2.f);
+//    std::vector<Point> points_ch_test2_ch(ps_branch, ps_branch + SEG + 1);
+//    delete ps_branch;
+//    SimpleTreeBranch branch_test2_ch(points_ch_test2_ch, glm::vec3(0), 0, 0, 20, length/2);
+//    branch_test2_ch.update_points();
+//    branch_test2.add_child(branch_test2_ch);
 
 //    branch1.rot_z = 1;
     ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.05, 0.,
@@ -447,6 +498,14 @@ int main(int argc, char *argv[]) {
     branch_snow.update_points();
     snow_plane = new SPlane(branch_snow, 45.F);
 //    snow_plane = new SPlane();
+
+    resource_manager::load_shader("shaders/particle.vert", "shaders/particle.frag", nullptr, "Particle");
+    resource_manager::load_texture("textures/snow_near.png", true, "Particle");
+    const auto particle_shader = resource_manager::get_shader("Particle");
+    const auto particle_texture = resource_manager::get_texture("Particle");
+
+    pg = new particle_generator(particle_shader, particle_texture, 15000, glm::vec3(0, 0, 0),
+                                particle_mode::random_down);
 
 //    auto ps_branch2 = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.07, 0.05, SEG, 0, 1, 8.77e9, 1.f, 1.f,
 //                                              2.f);
@@ -515,17 +574,29 @@ int main(int argc, char *argv[]) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         if(fps_limit <= 0 || delta_time * fps_limit >= 1.0) {
+//            pg->update(delta_time, 3000, force);
+//            if(glfwGetTime() - last_change_time > FORCE_CLEAR_INTERVAL) {
+//                force = glm::vec3(0.0f);
+//            }
             // 网格更新
 //            tree.branches[0].points[0].position -= glm::vec3(0, 0.01, 0);
 //            tree.branches[0].update_points();
+//            branch_test.reset();
+//            branch_test2.reset();
+//            q += 600 * delta_time;
+//            branch_test_ch.uniform_load_pressure(q);
+//            branch_test2.uniform_load_pressure(q);
+//            branch_test.complete_calculate();
+//            branch_test2.complete_calculate();
             if(not stop) {
                 tree.reset();
-                q += 600 * delta_time;
+                q += 300 * delta_time;
 
 //                branch5.uniform_load_pressure(q);
-                for(int i = 0; i < 5; i++) {
-                    branches_vec[i]->uniform_load_pressure(q / (i + 1));
+                for(int i = 0; i < snows; i++) {
+                    branches_vec[index[i]]->uniform_load_pressure(q / (i + 1));
                 }
+//                branch2.uniform_load_pressure(q);
 
                 stop = tree.complete_calculate() or stop;
 
@@ -569,8 +640,8 @@ int main(int argc, char *argv[]) {
         // Draw
         // be sure to activate shader when setting uniforms/drawing objects
         shader.use();
-//        shader.set_vector3f("objectColor", 1.0f, 0.5f, 0.31f);
-        shader.set_vector3f("objectColor", 1.f, 1.f, 1.f);
+        shader.set_vector3f("objectColor", 1.0f, 0.5f, 0.31f);
+//        shader.set_vector3f("objectColor", 1.f, 1.f, 1.f);
         shader.set_vector3f("lightColor", 1.0f, 1.0f, 1.0f);
         shader.set_vector3f("lightPos", lightPos);
         shader.set_vector3f("viewPos", camera.position);
@@ -590,15 +661,30 @@ int main(int argc, char *argv[]) {
         model = glm::translate(model, glm::vec3(-0.5f, -0.5f, -0.5f));
 //        model = glm::rotate(model, glm::radians(-90.f), glm::vec3(0, 0, 1));
 //        model = glm::scale(model, glm::vec3(0.05, 0.05, 0.05));
-//        shader.set_matrix4("model", model);
-//        tree.draw(model, shader);
-        snow_plane->draw(model, shader);
-        shader.set_vector3f("objectColor", 1.0f, 0.5f, 0.31f);
-        if(snow_plane->branch != nullptr)
-            snow_plane->branch->draw(model, shader);
+        shader.set_matrix4("model", model);
+//        branch2.draw(model, shader);
+        glFrontFace(GL_CW);
+//        l_tree.draw(model, shader);
+        tree.draw(model, shader);
+//        shader.set_vector3f("objectColor", 1.0f, 1.0f, 1.0f);
+//        snow_plane->draw(model, shader);
+//        shader.set_vector3f("objectColor", 1.0f, 0.5f, 0.31f);
+//        if(snow_plane->branch != nullptr)
+//            snow_plane->branch->draw(model, shader);
+        shader.set_vector3f("objectColor", 1.0f, 1.0f, 1.0f);
+        for(int i = 0; i < snows; ++i) {
+            planes[i].draw(model, shader);
+        }
+
+//        shader.set_vector3f("objectColor", 1.0f, 0.5f, 0.31f);
+//        branch_test.draw(model, shader);
+//        branch_test2.draw(model, shader);
 
 //        tree2.draw(model, shader);
 //        tree.draw(shader);
+
+//        glFrontFace(GL_CCW);
+//        pg->draw();
 
 //        for(int i = 0; i < branch_num; i++) {
 //            glm::mat4 model_branch = glm::mat4(1.0f);

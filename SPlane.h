@@ -27,7 +27,7 @@ public:
 public:
     SPlane();
 
-    SPlane(const SimpleTreeBranch &branch, const float &accumulate_angle = 30.F);
+    SPlane(const SimpleTreeBranch &branch, const float &accumulate_angle = 30.F, const float &height = 0.01F);
 
     void change_mode(int m);
 

@@ -158,13 +158,15 @@ void SPlane::draw(glm::mat4 transform, Shader shader) {
         shader.set_matrix4("model", transform);
     } else {
         glm::mat4 rot = glm::rotate(glm::mat4(1), glm::radians(-rot_angle), glm::vec3(0, 0, -1));
-        shader.set_matrix4("model", transform * branch->_transform * rot);
+//        glm::mat4 rot = glm::rotate(glm::mat4(1), glm::radians(-90.F), glm::vec3(0, 0, -1));
+//        shader.set_matrix4("model", transform * *branch->last_transform * rot);
+        shader.set_matrix4("model", *branch->last_transform * rot);
     }
 
     meshes[mode - 1].draw(shader);
 }
 
-SPlane::SPlane(const SimpleTreeBranch &branch, const float &accumulate_angle)
+SPlane::SPlane(const SimpleTreeBranch &branch, const float &accumulate_angle, const float &height)
         : mode(1), branch(&branch) {
     const auto &mesh = branch.mesh;
     auto rot_z = branch.rot_z;
@@ -278,7 +280,7 @@ SPlane::SPlane(const SimpleTreeBranch &branch, const float &accumulate_angle)
 
         trans = glm::translate(trans,
                                glm::normalize(pos - prev) *
-                               (float) (distance * .07F *
+                               (float) ((height + distance * .03F) *
                                         magnification(float(i / PRECISION) / branch.points.size(),
                                                       float(i % PRECISION) / PRECISION)));
 
@@ -316,9 +318,10 @@ SPlane::SPlane(const SimpleTreeBranch &branch, const float &accumulate_angle)
             prev = glm::vec3(0);
         }
 
+        prev = glm::vec3(0);
         if(prev != glm::vec3(0)) {
             trans = glm::translate(trans, glm::normalize(pos - prev) *
-                                          (float) (distance * .03F *
+                                          (float) ((height + distance * .02F) *
                                                    magnification(float(i / PRECISION) / branch.points.size(),
                                                                  0.5F)));
         }
