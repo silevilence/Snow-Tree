@@ -151,6 +151,7 @@ bool SimpleTreeBranch::uniform_load_pressure(const float &q, float q_theta) {
     if(threshold < 1e-5) {
         threshold = length;
     }
+    threshold = length / 50;
 
     for(int i = 0; i < points.size(); ++i) {
         const float r =
@@ -176,6 +177,23 @@ bool SimpleTreeBranch::uniform_load_pressure(const float &q, float q_theta) {
 
 //                if(i == 0)
 //                    std::cout << omega << ' ' << q_theta << std::endl;
+    }
+
+    if(fabsf(this->points.back().position.x - this->points.back().ori_pos.x) >= threshold) {
+        stop = true;
+    }
+//    if(q > 10000)
+//        stop = true;
+
+    if(stop and this->parent != nullptr) {
+        auto parent = this->parent;
+        this->parent = nullptr;
+
+        for(auto ptr = parent->children.begin(); ptr != parent->children.end(); ptr++) {
+            if(*ptr == this) {
+                parent->children.erase(ptr);
+            }
+        }
     }
 
 //    this->update_points();
