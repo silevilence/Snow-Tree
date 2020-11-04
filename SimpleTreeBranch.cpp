@@ -192,6 +192,7 @@ bool SimpleTreeBranch::uniform_load_pressure(const float &q, float q_theta) {
         for(auto ptr = parent->children.begin(); ptr != parent->children.end(); ptr++) {
             if(*ptr == this) {
                 parent->children.erase(ptr);
+                break;
             }
         }
     }
@@ -270,6 +271,8 @@ void SimpleTreeBranch::reset(const bool &recursive) {
         point.rotAngle = point.ori_angle;
     }
 
+    if(changed)
+        update_points();
     force_sum = glm::vec3(0);
     changed = false;
 
@@ -292,6 +295,7 @@ bool SimpleTreeBranch::complete_calculate(const bool &recursive) {
 
     if(changed)
         this->update_points();
+//    changed = false;
 
     if(recursive and (not children.empty())) {
         for(auto &child : children) {

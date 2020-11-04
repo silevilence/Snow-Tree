@@ -200,9 +200,9 @@ int main(int argc, char *argv[]) {
 //
 //    delete ps_branch;
 
-//    auto tree_str = LSystem::param_iterator("A(0)", 5);
+    auto tree_str = LSystem::param_iterator("A(0)", 5);
 //    std::cout << tree_str << std::endl;
-//    auto l_tree = LSystem::param_l_interpret(tree_str);
+    auto l_tree = LSystem::param_l_interpret(tree_str);
 
     const int SEG = 25;
     const float length = 1;
@@ -523,11 +523,12 @@ int main(int argc, char *argv[]) {
 
 //    int index[] = {22, 1, 17, 9, 2};
 //    int index[] = {21, 18, 6, 2, 11};
-    int index[] = {21, 18, 6, 2, 11, 22, 1, 17, 9};
-    snows = 9;
-    SPlane planes[9];
+//    int index[] = {21, 18, 6, 2, 11, 22, 1, 17, 9};
+    int index[] = { 18, 6, 2, 11, 22, 1, 17, 9};
+    snows = 8;
+    SPlane planes[8];
     for(int i = 0; i < snows; ++i) {
-        new(&planes[i]) SPlane(*branches_vec[index[i]], 45.F, 0.1 / (i /*% 4*/ + 1));
+        new(&planes[i]) SPlane(*branches_vec[index[i]], 45.F, 0.1F / float(i /*% 4*/ + 1));
     }
 
 //    ps_branch = MyTree::generate_branch(length/2, glm::vec3(0, 0, 1), 0, 0.03, 0.02, SEG, 0, 1, 8.77e9, 1.f,
@@ -569,7 +570,7 @@ int main(int argc, char *argv[]) {
     SimpleTreeBranch branch_snow(points_ch_snow, glm::vec3(0), -70, 0, 30, length);
     branch_snow.update_points();
     snow_plane = new SPlane(branch_snow, 45.F);
-//    snow_plane = new SPlane();
+    auto ground = new SPlane();
 
     resource_manager::load_shader("shaders/particle.vert", "shaders/particle.frag", nullptr, "Particle");
     resource_manager::load_texture("textures/snow_near.png", true, "Particle");
@@ -622,6 +623,12 @@ int main(int argc, char *argv[]) {
 //    tree.branches[0].update_points();
     bool stop = false;
 //    stop = true;
+    bool fall_snow = false;
+    fall_snow = true;
+    bool snow_ground = false;
+    snow_ground = true;
+    bool snow_branch = false;
+    snow_branch = true;
 //    float threshold = fabsf(L * cosf(glm::radians(b_theta)));
 //    if(threshold < 1e-5) {
 //        threshold = L;
@@ -647,10 +654,12 @@ int main(int argc, char *argv[]) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         if(fps_limit <= 0 || delta_time * fps_limit >= 1.0) {
-//            pg->update(delta_time, 3000, force);
-//            if(glfwGetTime() - last_change_time > FORCE_CLEAR_INTERVAL) {
-//                force = glm::vec3(0.0f);
-//            }
+            if(fall_snow) {
+                pg->update(delta_time, 3000, force);
+                if(glfwGetTime() - last_change_time > FORCE_CLEAR_INTERVAL) {
+                    force = glm::vec3(0.0f);
+                }
+            }
             // 网格更新
 //            tree.branches[0].points[0].position -= glm::vec3(0, 0.01, 0);
 //            tree.branches[0].update_points();
@@ -663,13 +672,14 @@ int main(int argc, char *argv[]) {
 //            branch_test2.complete_calculate();
             if(not stop) {
                 tree.reset();
-                q += 1000 * delta_time;
+                q += 900 * delta_time;
 
 //                branch5.uniform_load_pressure(q);
 //                for(int i = 0; i < snows; i++) {
 //                    branches_vec[index[i]]->uniform_load_pressure(q / (i + 1));
 //                }
-                branch2.uniform_load_pressure(q);
+//                branch2.uniform_load_pressure(q);
+                branches_vec[21]->uniform_load_pressure(q);
 
                 stop = tree.complete_calculate() or stop;
 
@@ -677,32 +687,6 @@ int main(int argc, char *argv[]) {
                     std::cout << tree.branches[0].points[tree.branches[0].points.size() - 1].position.x
                               << std::endl;
                 }
-//                stop = stop or tree2.branches[0].uniform_load_pressure(q);
-//                for(int i = 0; i <= SEG; ++i) {
-//                    const float I = glm::pi<float>() * powf(tree.branches[0].points[i].radius, 4.f) / 4;
-//                    const float x = L - i * L / SEG;
-//
-//                    float q_vert = q * sinf(glm::radians(b_theta));
-////                    float q_hori = q * cosf(glm::radians(b_theta));
-//                    float omega = cal_omega(tree.branches[0].points[i].E, I, q_vert, L, x);
-//                    float theta = cal_theta(tree.branches[0].points[i].E, I, q_vert, L, x);
-//
-//                    if(fabsf(omega) >= threshold) {
-//                        stop = true;
-////                        std::cout << "stop" << std::endl;
-//                    }
-//
-////                if(i == SEG)
-////                    std::cout << omega << std::endl;
-//
-//                    tree.branches[0].points[i].position = glm::vec3(-omega, tree.branches[0].points[i].position.y,
-//                                                                    tree.branches[0].points[i].position.z);
-//                    tree.branches[0].points[i].rotAngle = -theta;
-//
-////                if(i == 0)
-////                    std::cout << omega << ' ' << theta << std::endl;
-//                }
-//                tree.branches[0].update_points();
             }
 
             // Update
@@ -746,21 +730,48 @@ int main(int argc, char *argv[]) {
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(-0.5f, -1.5f, -0.5f));
 //        model = glm::rotate(model, glm::radians(-90.f), glm::vec3(0, 0, 1));
-//        model = glm::scale(model, glm::vec3(0.05, 0.05, 0.05));
+//        model = glm::scale(model, glm::vec3(0.1, 0.1, 0.1));
         shader.set_matrix4("model", model);
 //        branch2.draw(model, shader);
         glFrontFace(GL_CW);
 //        l_tree.draw(model, shader);
         tree.draw(model, shader);
+
+        if(snow_branch) {
+            shader.set_vector3f("objectColor", 1.0f, 1.0f, 1.0f);
+            for(int i = 0; i < snows; ++i) {
+                planes[i].draw(model, shader);
+            }
+        }
+
+        shader.set_vector3f("objectColor", 0.59F, 0.29F, 0.F);
+        model = glm::scale(model, glm::vec3(0.1, 0.1, 0.1));
+        model = glm::translate(model, glm::vec3(-30.f, -0.f, -0.f));
+        l_tree.draw(model, shader);
+        model = glm::translate(model, glm::vec3(-0.f, -0.f, -30.f));
+        l_tree.draw(model, shader);
+        model = glm::translate(model, glm::vec3(-0.f, -0.f, -30.f));
+        l_tree.draw(model, shader);
+        model = glm::translate(model, glm::vec3(80.f, -0.f, -0.f));
+        l_tree.draw(model, shader);
+        model = glm::translate(model, glm::vec3(-0.f, -0.f, 30.f));
+        l_tree.draw(model, shader);
+        model = glm::translate(model, glm::vec3(-0.f, -0.f, 30.f));
+        l_tree.draw(model, shader);
+
+        if(snow_ground) {
+            glFrontFace(GL_CCW);
+            shader.set_vector3f("objectColor", 1.0f, 1.0f, 1.0f);
+            model = glm::translate(model, glm::vec3(-150.f, 0.f, -170.f));
+            model = glm::scale(model, glm::vec3(1000, 10, 1000));
+            ground->draw(model, shader);
+        }
+
 //        shader.set_vector3f("objectColor", 1.0f, 1.0f, 1.0f);
 //        snow_plane->draw(model, shader);
 //        shader.set_vector3f("objectColor", 1.0f, 0.5f, 0.31f);
 //        if(snow_plane->branch != nullptr)
 //            snow_plane->branch->draw(model, shader);
-//        shader.set_vector3f("objectColor", 1.0f, 1.0f, 1.0f);
-//        for(int i = 0; i < snows; ++i) {
-//            planes[i].draw(model, shader);
-//        }
 
 //        shader.set_vector3f("objectColor", 1.0f, 0.5f, 0.31f);
 //        branch_test.draw(model, shader);
@@ -769,8 +780,10 @@ int main(int argc, char *argv[]) {
 //        tree2.draw(model, shader);
 //        tree.draw(shader);
 
-//        glFrontFace(GL_CCW);
-//        pg->draw();
+        if(fall_snow) {
+            glFrontFace(GL_CCW);
+            pg->draw();
+        }
 
 //        for(int i = 0; i < branch_num; i++) {
 //            glm::mat4 model_branch = glm::mat4(1.0f);

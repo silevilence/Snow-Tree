@@ -32,7 +32,7 @@ std::vector<Vertex> point_lerp(const Vertex &vertex1, const Vertex &vertex2, con
 inline float magnification(const float &x, const float &y);
 
 SPlane::SPlane()
-        : mode(1) {
+        : mode(1), branch(nullptr) {
     generate_points();
     generate_index();
     setup_mesh();
