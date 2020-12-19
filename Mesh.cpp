@@ -12,7 +12,7 @@ Mesh::Mesh() {
     is_set = false;
 }
 
-void Mesh::setup_mesh(const bool &recalculate_normal, const bool &force) {
+void Mesh::setup_mesh(const bool &recalculate_normal, const bool &force, const bool &texture) {
     if(force) {
         _clear_buffer();
     } else if(is_set) {
@@ -41,8 +41,10 @@ void Mesh::setup_mesh(const bool &recalculate_normal, const bool &force) {
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, normal));
     // 顶点纹理坐标
-//    glEnableVertexAttribArray(2);
-//    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, TexCoords));
+    if(texture) {
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, tex_coord));
+    }
 
     glBindVertexArray(0);
 

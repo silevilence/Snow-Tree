@@ -9,6 +9,7 @@
 #include <vector>
 #include "SimpleTreeBranch.h"
 #include "Point.h"
+#include "Texture2D.h"
 
 class SimpleTree {
 public:
@@ -36,6 +37,7 @@ public:
 
 private:
 public:
+//    static texture2d &tree_texture;
     std::vector<SimpleTreeBranch> branches;
 };
 

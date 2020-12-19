@@ -51,7 +51,7 @@ SimpleTreeBranch &SimpleTreeBranch::operator=(SimpleTreeBranch &&branch) noexcep
 
 void SimpleTreeBranch::generate_mesh(const bool &cal_normal) {
     this->mesh = MyTree::Create_Cylinders(&points[0], points.size(), precision);
-    this->mesh.setup_mesh(cal_normal);
+    this->mesh.setup_mesh(cal_normal, false, true);
 }
 
 inline void SimpleTreeBranch::_copy(const SimpleTreeBranch &branch) {

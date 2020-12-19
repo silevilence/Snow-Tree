@@ -51,7 +51,7 @@ void SPlane::generate_points() {
             float x = j * PLANE_SIZE / PRECISION;
             float y = 0;
             float z = i * PLANE_SIZE / PRECISION;
-            y = (float) perlin->OctavePerlin(x * 2, y, z * 2, 5, 2) * .2F
+            y = (float) perlin->OctavePerlin(x * 2, y, z * 2, 5, 2) * .4F
                 * magnification((float) i / PRECISION, (float) j / PRECISION);
 //            if(not(i == 0 or i == PRECISION - 1 or j == 0 or j == PRECISION - 1)) {
 ////                y = u(e);

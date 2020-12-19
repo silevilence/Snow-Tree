@@ -107,13 +107,18 @@ SimpleTree LSystem::param_l_interpret(std::string str) {
     glm::mat4 transform(1);
     std::stack<glm::mat4> trans_stack;
     std::vector<SimpleTreeBranch> branches;
+//    SimpleTreeBranch *current;
+//    std::stack<SimpleTreeBranch *> branch_stack;
 
     auto glPushMatrix = [&]()mutable {
         trans_stack.push(transform);
+//        branch_stack.push(current);
     };
     auto glPopMatrix = [&]()mutable {
         transform = trans_stack.top();
         trans_stack.pop();
+//        current = branch_stack.top();
+//        branch_stack.pop();
     };
     auto glRotatef = [&](float angle, float x, float y, float z)mutable {
         transform = glm::rotate(transform, glm::radians(angle), glm::vec3(x, y, z));
@@ -134,6 +139,14 @@ SimpleTree LSystem::param_l_interpret(std::string str) {
             points = std::vector<Point>(bps, bps + (int) height + 1);
             delete bps;
         }
+//        if(not branch_stack.empty()) {
+//            SimpleTreeBranch branch(points, transform, 20);
+////            current->parent = &branch;
+//            branch_stack.top()->add_child(branch);
+//        } else {
+//            branches.emplace_back(points, transform, 20);
+//            current = &branches.back();
+//        }
         branches.emplace_back(points, transform, 20);
     };
     auto bezierLeafDisplay = [&]()mutable {

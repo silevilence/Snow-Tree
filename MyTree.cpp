@@ -21,6 +21,7 @@ Vertex *MyTree::Circle_Vertices(const Point &point, const int &precision) {
         glm::vec4 vertex4 = rotMat * firstPointV4;
         vertices[i].position = glm::vec3(vertex4.x, vertex4.y, vertex4.z);
         vertices[i].normal = glm::normalize(vertices[i].position - point.position);
+        vertices[i].tex_coord = glm::vec2(i, 0);
     }
 
     return vertices;
@@ -33,6 +34,8 @@ Mesh MyTree::Create_Cylinders(const Point *points, int pointNum, int precision, 
     auto vertices = new Vertex[pointNum * precision];
     for(int i = 0; i < pointNum; i++) {
         Vertex *single_vertices = Circle_Vertices(points[i], precision);
+        for(int j = 0; j < precision; ++j)
+            single_vertices[j].tex_coord.t = i;
         memcpy(vertices + i * precision, single_vertices, precision * sizeof(Vertex));
         delete single_vertices;
     }
@@ -69,7 +72,8 @@ Mesh MyTree::Create_Cylinders(const Point *points, int pointNum, int precision, 
 }
 
 int *
-MyTree::_Create_Cylinder_Triangles(int precision, int bottom_start = -1, int top_start = -1, const bool &close_bottom,
+MyTree::_Create_Cylinder_Triangles(int precision, int bottom_start = -1, int top_start = -1,
+                                   const bool &close_bottom,
                                    const bool &close_top) {
     // check params
     if(bottom_start < 0)
@@ -116,7 +120,8 @@ MyTree::_Create_Cylinder_Triangles(int precision, int bottom_start = -1, int top
     return triangles;
 }
 
-Point *MyTree::generate_circular_helix(const GLfloat &a, const GLfloat &omega, const GLfloat &H, const GLfloat &radius,
+Point *MyTree::generate_circular_helix(const GLfloat &a, const GLfloat &omega, const GLfloat &H,
+                                       const GLfloat &radius,
                                        int times = -1) {
     assert(a > 0 and omega > 0 and H > 0 and radius > 0);
     if(times < 0) {
@@ -152,7 +157,8 @@ Point *MyTree::generate_circular_helix(const GLfloat &a, const GLfloat &omega, c
 
 Point *MyTree::generate_branch(const float &length, const glm::vec3 &rot_axis, const float &start_angel,
                                const float &start_radius, const float &end_radius, const int &seg_num,
-                               const float &curve_angle, const float &exp, const float &base_e, const float &s_min,
+                               const float &curve_angle, const float &exp, const float &base_e,
+                               const float &s_min,
                                const float &s_max, const float &epsilon3) {
     assert(length > 0 and start_radius >= end_radius and end_radius >= 0 and seg_num > 0 and exp > 0);
     auto points = new Point[seg_num + 1];
@@ -160,8 +166,9 @@ Point *MyTree::generate_branch(const float &length, const glm::vec3 &rot_axis, c
     auto mat = glm::mat4(1);
     float x = 0;
     for(int seg_id = 1; seg_id <= seg_num; seg_id++) {
-        auto distance_delta = (glm::pow((float) seg_id / seg_num, exp) - glm::pow((float) (seg_id - 1) / seg_num, exp))
-                              * length;
+        auto distance_delta =
+                (glm::pow((float) seg_id / seg_num, exp) - glm::pow((float) (seg_id - 1) / seg_num, exp))
+                * length;
         x += distance_delta;
 //        std::cout << x << std::endl;
 
@@ -214,9 +221,10 @@ Point *MyTree::generate_branch(const float &length, const glm::vec3 &rot_axis, c
     return points;
 }
 
-Point *MyTree::generate_branch(const float &length, const glm::vec3 &start_direction, const float &start_radius,
-                               const float &end_radius, const int &seg_num, const float &curve_angle,
-                               const float &exp) {
+Point *
+MyTree::generate_branch(const float &length, const glm::vec3 &start_direction, const float &start_radius,
+                        const float &end_radius, const int &seg_num, const float &curve_angle,
+                        const float &exp) {
     assert(start_direction != glm::vec3(0) and start_direction != glm::vec3(0, 1, 0));
 
     auto rot_axis = glm::normalize(glm::cross(glm::vec3(0, 1, 0), start_direction));

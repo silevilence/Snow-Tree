@@ -6,11 +6,15 @@
 
 #include "SimpleTree.h"
 #include "MyTree.h"
+#include "ResourceManager.h"
 
 SimpleTree::SimpleTree(std::vector<SimpleTreeBranch> branches) : branches(std::move(branches)) {
 }
 
 void SimpleTree::draw(const glm::mat4 &transform, Shader shader) {
+    shader.set_integer("sprite", 0);
+    glActiveTexture(GL_TEXTURE0);
+    resource_manager::get_texture("tree").bind();
     for(auto &branch: branches) {
         branch.draw(transform, shader);
     }
@@ -59,7 +63,7 @@ void SimpleTree::reset() {
 bool SimpleTree::complete_calculate() {
     bool stop = false;
 
-    for(auto & branch : branches) {
+    for(auto &branch : branches) {
         stop = branch.complete_calculate(true) or stop;
     }
 

@@ -28,7 +28,7 @@ public:
 
     Mesh &operator=(const Mesh &mesh) noexcept;
 
-    void setup_mesh(const bool &recalculate_normal = true, const bool &force = false);
+    void setup_mesh(const bool &recalculate_normal = true, const bool &force = false, const bool &texture = false);
 
     void update_vertices_data(const bool &recalculate_normal = true);
 

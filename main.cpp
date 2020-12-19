@@ -132,10 +132,12 @@ int main(int argc, char *argv[]) {
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *) nullptr);
 
-    Shader shader;
-    shader.compile_from_file("shaders/object.vert", "shaders/object.frag");
+    Shader snow_shader;
+    snow_shader.compile_from_file("shaders/object.vert", "shaders/object.frag");
     Shader skyboxShader;
     skyboxShader.compile_from_file("shaders/skybox.vert", "shaders/skybox.frag");
+    Shader tree_shader;
+    tree_shader.compile_from_file("shaders/tree.vert", "shaders/tree.frag");
 
     // load textures
     std::vector<std::string> faces{
@@ -209,8 +211,11 @@ int main(int argc, char *argv[]) {
 
     std::vector<SimpleTreeBranch *> branches_vec;
 
+    resource_manager::load_texture("textures/tree3.jpg", false, "tree");
+
     // root branch
-    auto ps_branch = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.1, 0.09, SEG, 0, 1, 8.77e9,
+    auto ps_branch = MyTree::generate_branch(length * 1.5, glm::vec3(0, 0, 1), 0, 0.2, 0.15, SEG, 0, 1,
+                                             8.77e9,
                                              1.f, 1.f, 2.f);
 //    auto branch = MyTree::Create_Cylinders(ps_branch, SEG + 1, 20);
 //    branch.setup_mesh();
@@ -218,7 +223,9 @@ int main(int argc, char *argv[]) {
     delete ps_branch;
     std::vector<SimpleTreeBranch> branches;
     float b_theta = 90.f;
+//    SimpleTreeBranch branch1(points, glm::vec3(0), 0, 0, 20, length * 1.5);
     branches.emplace_back(points, glm::vec3(0), 0, 0, 20, length);
+//    branches.push_back(branch1);
 //    SimpleTreeBranch branch(points, glm::vec3(0), 90, 0);
     SimpleTree tree(branches);
     tree.branches[0].update_points();
@@ -523,10 +530,10 @@ int main(int argc, char *argv[]) {
 
 //    int index[] = {22, 1, 17, 9, 2};
 //    int index[] = {21, 18, 6, 2, 11};
-//    int index[] = {21, 18, 6, 2, 11, 22, 1, 17, 9};
-    int index[] = { 18, 6, 2, 11, 22, 1, 17, 9};
-    snows = 8;
-    SPlane planes[8];
+    int index[] = {21, 18, 6, 2, 11, 22, 1, 17, 9};
+//    int index[] = {18, 6, 2, 11, 22, 1, 17, 9};
+    snows = 9;
+    SPlane planes[9];
     for(int i = 0; i < snows; ++i) {
         new(&planes[i]) SPlane(*branches_vec[index[i]], 45.F, 0.1F / float(i /*% 4*/ + 1));
     }
@@ -577,7 +584,7 @@ int main(int argc, char *argv[]) {
     const auto particle_shader = resource_manager::get_shader("Particle");
     const auto particle_texture = resource_manager::get_texture("Particle");
 
-    pg = new particle_generator(particle_shader, particle_texture, 15000, glm::vec3(0, 0, 0),
+    pg = new particle_generator(particle_shader, particle_texture, 25000, glm::vec3(0, 0, 0),
                                 particle_mode::random_down);
 
 //    auto ps_branch2 = MyTree::generate_branch(length, glm::vec3(0, 0, 1), 0, 0.07, 0.05, SEG, 0, 1, 8.77e9, 1.f, 1.f,
@@ -629,6 +636,10 @@ int main(int argc, char *argv[]) {
     snow_ground = true;
     bool snow_branch = false;
     snow_branch = true;
+    bool road_tree = false;
+    road_tree = true;
+    bool skybox = false;
+//    skybox = true;
 //    float threshold = fabsf(L * cosf(glm::radians(b_theta)));
 //    if(threshold < 1e-5) {
 //        threshold = L;
@@ -650,7 +661,7 @@ int main(int argc, char *argv[]) {
         }
         //std::cout << 1 / delta_time << std::endl;
         glfwPollEvents();
-        glClearColor(0.1F, 0.1F, 0.1F, 1.0F);
+        glClearColor(0.5F, 0.5F, 0.5F, 1.0F);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         if(fps_limit <= 0 || delta_time * fps_limit >= 1.0) {
@@ -712,73 +723,86 @@ int main(int argc, char *argv[]) {
 //        glDepthMask(GL_TRUE);
 
         // Draw
-        // be sure to activate shader when setting uniforms/drawing objects
-        shader.use();
-        shader.set_vector3f("objectColor", 0.59F, 0.29F, 0.F);
-//        shader.set_vector3f("objectColor", 1.f, 1.f, 1.f);
-        shader.set_vector3f("lightColor", 1.0f, 1.0f, 1.0f);
-        shader.set_vector3f("lightPos", lightPos);
-        shader.set_vector3f("viewPos", camera.position);
+        // be sure to activate snow_shader when setting uniforms/drawing objects
+        tree_shader.use();
+        tree_shader.set_vector3f("objectColor", 0.59F, 0.29F, 0.F);
+//        tree_shader.set_vector3f("objectColor", 1.f, 1.f, 1.f);
+        tree_shader.set_vector3f("lightColor", 1.0f, 1.0f, 1.0f);
+        tree_shader.set_vector3f("lightPos", lightPos);
+        tree_shader.set_vector3f("viewPos", camera.position);
 
-//        snow.draw(shader);
+//        snow.draw(snow_shader);
 
         // view/projection transformations
-        shader.set_matrix4("projection", projection);
-        shader.set_matrix4("view", view);
+        tree_shader.set_matrix4("projection", projection);
+        tree_shader.set_matrix4("view", view);
+
+        snow_shader.use();
+        snow_shader.set_vector3f("lightColor", 1.0f, 1.0f, 1.0f);
+        snow_shader.set_vector3f("lightPos", lightPos);
+        snow_shader.set_vector3f("viewPos", camera.position);
+        snow_shader.set_matrix4("projection", projection);
+        snow_shader.set_matrix4("view", view);
 
         // world transformation
+        tree_shader.use();
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(-0.5f, -1.5f, -0.5f));
 //        model = glm::rotate(model, glm::radians(-90.f), glm::vec3(0, 0, 1));
 //        model = glm::scale(model, glm::vec3(0.1, 0.1, 0.1));
-        shader.set_matrix4("model", model);
-//        branch2.draw(model, shader);
+        tree_shader.set_matrix4("model", model);
+//        branch2.draw(model, tree_shader);
         glFrontFace(GL_CW);
-//        l_tree.draw(model, shader);
-        tree.draw(model, shader);
+//        l_tree.draw(model, tree_shader);
+        tree.draw(model, tree_shader);
 
         if(snow_branch) {
-            shader.set_vector3f("objectColor", 1.0f, 1.0f, 1.0f);
+            snow_shader.set_vector3f("objectColor", 1.0f, 1.0f, 1.0f);
             for(int i = 0; i < snows; ++i) {
-                planes[i].draw(model, shader);
+                planes[i].draw(model, snow_shader);
             }
         }
 
-        shader.set_vector3f("objectColor", 0.59F, 0.29F, 0.F);
-        model = glm::scale(model, glm::vec3(0.1, 0.1, 0.1));
-        model = glm::translate(model, glm::vec3(-30.f, -0.f, -0.f));
-        l_tree.draw(model, shader);
-        model = glm::translate(model, glm::vec3(-0.f, -0.f, -30.f));
-        l_tree.draw(model, shader);
-        model = glm::translate(model, glm::vec3(-0.f, -0.f, -30.f));
-        l_tree.draw(model, shader);
-        model = glm::translate(model, glm::vec3(80.f, -0.f, -0.f));
-        l_tree.draw(model, shader);
-        model = glm::translate(model, glm::vec3(-0.f, -0.f, 30.f));
-        l_tree.draw(model, shader);
-        model = glm::translate(model, glm::vec3(-0.f, -0.f, 30.f));
-        l_tree.draw(model, shader);
+        if(road_tree) {
+            tree_shader.use();
+//            tree_shader.set_vector3f("objectColor", 0.59F, 0.29F, 0.F);
+            tree_shader.set_vector3f("objectColor", 1.F, 1.F, 1.F);
+            model = glm::scale(model, glm::vec3(0.1, 0.1, 0.1));
+            model = glm::translate(model, glm::vec3(-30.f, -0.f, -200.f));
+            l_tree.draw(model, tree_shader);
+            model = glm::translate(model, glm::vec3(-30.f, -0.f, -0.f));
+            l_tree.draw(model, tree_shader);
+            model = glm::translate(model, glm::vec3(-30.f, -0.f, -0.f));
+            l_tree.draw(model, tree_shader);
+            model = glm::translate(model, glm::vec3(-30.f, -0.f, -0.f));
+            l_tree.draw(model, tree_shader);
+            model = glm::translate(model, glm::vec3(-30.f, -0.f, 0.f));
+            l_tree.draw(model, tree_shader);
+            model = glm::translate(model, glm::vec3(-30.f, -0.f, 0.f));
+            l_tree.draw(model, tree_shader);
 
-        if(snow_ground) {
-            glFrontFace(GL_CCW);
-            shader.set_vector3f("objectColor", 1.0f, 1.0f, 1.0f);
-            model = glm::translate(model, glm::vec3(-150.f, 0.f, -170.f));
-            model = glm::scale(model, glm::vec3(1000, 10, 1000));
-            ground->draw(model, shader);
+            if(snow_ground) {
+                snow_shader.use();
+                glFrontFace(GL_CCW);
+                snow_shader.set_vector3f("objectColor", 1.0f, 1.0f, 1.0f);
+                model = glm::translate(model, glm::vec3(-400.f, 0.f, -500.f));
+                model = glm::scale(model, glm::vec3(1000, 10, 1000));
+                ground->draw(model, snow_shader);
+            }
         }
 
-//        shader.set_vector3f("objectColor", 1.0f, 1.0f, 1.0f);
-//        snow_plane->draw(model, shader);
-//        shader.set_vector3f("objectColor", 1.0f, 0.5f, 0.31f);
+//        snow_shader.set_vector3f("objectColor", 1.0f, 1.0f, 1.0f);
+//        snow_plane->draw(model, snow_shader);
+//        snow_shader.set_vector3f("objectColor", 1.0f, 0.5f, 0.31f);
 //        if(snow_plane->branch != nullptr)
-//            snow_plane->branch->draw(model, shader);
+//            snow_plane->branch->draw(model, snow_shader);
 
-//        shader.set_vector3f("objectColor", 1.0f, 0.5f, 0.31f);
-//        branch_test.draw(model, shader);
-//        branch_test2.draw(model, shader);
+//        snow_shader.set_vector3f("objectColor", 1.0f, 0.5f, 0.31f);
+//        branch_test.draw(model, snow_shader);
+//        branch_test2.draw(model, snow_shader);
 
-//        tree2.draw(model, shader);
-//        tree.draw(shader);
+//        tree2.draw(model, snow_shader);
+//        tree.draw(snow_shader);
 
         if(fall_snow) {
             glFrontFace(GL_CCW);
@@ -790,26 +814,28 @@ int main(int argc, char *argv[]) {
 //            model_branch = glm::translate(model_branch, glm::vec3(.1f, .1f + .2f * i, 0));
 //            model_branch = glm::rotate(model_branch, glm::radians(360.f * i / branch_num), glm::vec3(0, 1, 0));
 //            model_branch = glm::rotate(model_branch, glm::radians(80.f), glm::vec3(0, 0, -1));
-//            shader.use();
-//            shader.set_matrix4("model", model_branch);
-//            branches[i].draw(shader);
+//            snow_shader.use();
+//            snow_shader.set_matrix4("model", model_branch);
+//            branches[i].draw(snow_shader);
 //        }
 
-        // draw skybox as last
-        // change depth function so depth test passes when values are equal to depth buffer's content
-        glDepthFunc(GL_LEQUAL);
-        glFrontFace(GL_CCW);
-        skyboxShader.use();
-        view = glm::mat4(glm::mat3(camera.get_view_matrix())); // remove translation from the view matrix
-        skyboxShader.set_matrix4("view", view);
-        skyboxShader.set_matrix4("projection", projection);
-        // skybox cube
-        glBindVertexArray(skyboxVAO);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-        glBindVertexArray(0);
-        glDepthFunc(GL_LESS); // set depth function back to default
+        if(skybox) {
+            // draw skybox as last
+            // change depth function so depth test passes when values are equal to depth buffer's content
+            glDepthFunc(GL_LEQUAL);
+            glFrontFace(GL_CCW);
+            skyboxShader.use();
+            view = glm::mat4(glm::mat3(camera.get_view_matrix())); // remove translation from the view matrix
+            skyboxShader.set_matrix4("view", view);
+            skyboxShader.set_matrix4("projection", projection);
+            // skybox cube
+            glBindVertexArray(skyboxVAO);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            glBindVertexArray(0);
+            glDepthFunc(GL_LESS); // set depth function back to default
+        }
 
         glfwSwapBuffers(window);
     }
